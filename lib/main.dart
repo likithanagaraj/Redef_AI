@@ -1,13 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:redef_ai_main/Theme.dart';
 import 'package:redef_ai_main/core/supabase_config.dart';
+import 'package:redef_ai_main/providers/deepwork_timer.dart';
 import 'screens/splash_screen.dart';
 
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.init();
-
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => DeepworkTimer()),
+      ],
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
