@@ -3,20 +3,33 @@ import 'package:provider/provider.dart';
 import 'package:redef_ai_main/Theme.dart';
 import 'package:redef_ai_main/core/supabase_config.dart';
 import 'package:redef_ai_main/providers/deepwork_timer.dart';
+import 'package:redef_ai_main/providers/habit_provider.dart';
+import 'package:redef_ai_main/providers/tasks_provider.dart';
+import 'package:redef_ai_main/services/habit_service.dart';
+import 'package:redef_ai_main/services/task_service.dart';
 import 'screens/splash_screen.dart';
 
-void main() async{
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SupabaseConfig.init();
+
   runApp(
     MultiProvider(
       providers: [
+        Provider<HabitService>(create: (_) => HabitService()),
+        ChangeNotifierProvider(
+          create: (context) => HabitProvider(
+            habitService: context.read<HabitService>(),
+          ),
+        ),
+        ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => DeepworkTimer()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
+
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -37,7 +50,7 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
-      home: const  SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

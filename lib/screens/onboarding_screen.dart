@@ -83,10 +83,9 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Text(
                         page['subtitle']!,
                         style: const TextStyle(
-                          fontSize: 22,
-                          fontWeight: FontWeight.w500,
+                          fontSize: 24,
                           letterSpacing: -0.5,
-                          height: 1.4,
+                          height: 1.2,
                         ),
                         textAlign: TextAlign.center,
                       ),
@@ -146,7 +145,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
             child: Image.asset(
               page['progress']!,
               height: 18,
-              // fit: BoxFit.contain,
+              fit: BoxFit.contain,
             ),
           ),
         ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redef_ai_main/Theme.dart';
 import 'package:redef_ai_main/widgets/control_buttons.dart';
 import 'package:redef_ai_main/widgets/timer_circle.dart';
 
@@ -32,15 +33,15 @@ class _TopBar extends StatelessWidget {
       padding: const EdgeInsets.all(20.0),
       child: Row(
         children: [
-          Icon(Icons.hourglass_bottom, color: Colors.green.shade700, size: 28),
+          Icon(Icons.hourglass_bottom, color: AppColors.secondary, size: 28),
           const SizedBox(width: 4),
           Text(
             'Deep Work',
             style: TextStyle(
               fontSize: 24,
               fontWeight: FontWeight.w500,
-              color: Colors.grey.shade800,
-              letterSpacing: -1,
+              color: AppColors.secondary,
+              letterSpacing: -1.1,
             ),
           ),
         ],

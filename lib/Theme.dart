@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 class AppColors {
   static const primary = Color(0xFF59B74F);
   static const secondary = Color(0xFF014E3C);
-  static const white = Colors.white;
+  static const white = Colors.white; // TODO : change the variable name
   static const black = Colors.black;
   static const background = Color(0xFFF1EDE7);
 }
