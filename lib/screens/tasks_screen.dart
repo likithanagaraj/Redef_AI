@@ -31,6 +31,7 @@ class _TasksScreenState extends State<TasksScreen> {
   }
 
   @override
+  // Add task Button
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
@@ -51,7 +52,7 @@ class _TasksScreenState extends State<TasksScreen> {
       ),
     );
   }
-
+  // Heading
   Widget _buildHeader() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
@@ -112,7 +113,7 @@ class _TasksScreenState extends State<TasksScreen> {
       },
     );
   }
-
+  // Category Chip List
   Widget _buildCategoryChip({
     required String label,
     required bool isSelected,
@@ -121,14 +122,14 @@ class _TasksScreenState extends State<TasksScreen> {
     return GestureDetector(
       onTap: onTap,
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
         decoration: BoxDecoration(
           color: isSelected ? AppColors.secondary : Colors.transparent,
           border: Border.all(
             color: AppColors.secondary,
-            width: isSelected ? 2 : 1.5,
+            width: isSelected ? 1.5 : 1,
           ),
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(6),
         ),
         child: Text(
           label,
@@ -193,7 +194,7 @@ class _TasksScreenState extends State<TasksScreen> {
                 onToggleCompletion: provider.toggleTaskCompletion,
               ),
               if (completedTasks.isNotEmpty) ...[
-                const SizedBox(height: 16),
+                const SizedBox(height: 8),
                 TaskListWidget(
                   tasks: completedTasks,
                   isCompleted: true,

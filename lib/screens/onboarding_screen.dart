@@ -18,13 +18,12 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
       'title': 'Redef.ai',
       'image': 'assets/images/clippath.png',
       'subtitle': 'Get more done in a day than your friends do in a week',
-      'progress': 'assets/images/progress1.png'
     },
     {
       'title': 'Time Management',
       'image': 'assets/images/surreal-hourglass.png',
       'subtitle': 'Track your days and get the right insights to improve',
-      'progress': 'assets/images/progress2.png'
+
     },
   ];
 
@@ -83,7 +82,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
                       child: Text(
                         page['subtitle']!,
                         style: const TextStyle(
-                          fontSize: 24,
+                          fontSize: 20,
                           letterSpacing: -0.5,
                           height: 1.2,
                         ),
@@ -97,18 +96,23 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
               // Bottom button
               SizedBox(
                 width: double.infinity,
-                height: 56,
                 child: ElevatedButton(
                   onPressed: _nextPage,
                   style: ElevatedButton.styleFrom(
-                    textStyle: AppFonts.button,
-                    foregroundColor: AppColors.white,
+                    backgroundColor: AppColors.primary,
+                    foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                     ),
                     elevation: 0,
                   ),
                   child: Text(
+                    style: TextStyle(
+                      color: AppColors.white,
+                      height: 0,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w500,
+                    ),
                     isLastPage ? 'Get Started' : 'Next',
                   ),
                 ),
@@ -142,11 +146,7 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
         // Progress indicator
         Expanded(
           child: Center(
-            child: Image.asset(
-              page['progress']!,
-              height: 18,
-              fit: BoxFit.contain,
-            ),
+            child: Text('Redef AI')
           ),
         ),
 
@@ -156,3 +156,10 @@ class _OnboardingScreenState extends State<OnboardingScreen> {
     );
   }
 }
+
+
+// Image.asset(
+// page['progress']!,
+// height: 18,
+// fit: BoxFit.contain,
+// ),

@@ -28,13 +28,13 @@ class TimerCircle extends StatelessWidget {
             Text(
               timer.formatTime(timer.remainingSeconds),
               style: const TextStyle(
-                fontSize: 72,
+                fontSize: 78,
                 fontWeight: FontWeight.w300,
                 letterSpacing: -2,
               ),
             ),
-            const SizedBox(height: 20),
-            _TimeAdjustmentControls(),
+            const SizedBox(height: 10),
+            if(!timer.isRunning && !timer.isPaused)  _TimeAdjustmentControls(),
             const SizedBox(height: 10),
             Text(
               'Session: ${timer.completedWorkSessions % 4}/4',

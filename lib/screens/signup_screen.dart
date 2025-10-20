@@ -103,9 +103,10 @@ class _SignupScreenState extends State<SignupScreen> {
 
                   style: TextStyle(
                     fontSize: 32,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: Color(0xFF06462C),
                     letterSpacing: -0.5,
+                    fontFamily: 'SourceSerif4'
                   ),
                 ),
 
@@ -116,8 +117,7 @@ class _SignupScreenState extends State<SignupScreen> {
 
                       fontSize: 15,
                       color: Color(0xFF5A5A5A),
-                      height: 1.5,
-                      letterSpacing: 0
+                      height: 1.2,
                   ),
                 ),
 
@@ -125,6 +125,9 @@ class _SignupScreenState extends State<SignupScreen> {
 
                 // Email field
                 TextField(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.black
+                  ),
                   cursorColor: AppColors.primary,
                   controller: _emailController,
                   keyboardType: TextInputType.emailAddress,
@@ -132,42 +135,45 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintText: 'email',
                     hintStyle: TextStyle(
                       color: Colors.grey[400],
-                      fontSize: 15,
+                      fontSize: 16,
                     ),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: Color(0xFF06462C),
                         width: 1.5,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: Color(0xFF06462C),
-                        width: 1.5,
+                        width: 0.8,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: AppColors.primary,
                         width: 2,
                       ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                      horizontal: 8,
+                      vertical: 8,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
 
                 // Password field
                 TextField(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                    color: AppColors.black
+                  ),
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   cursorColor: AppColors.primary,
@@ -175,40 +181,41 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintText: 'password',
                     hintStyle: TextStyle(
                       color: Colors.grey[400],
-                      fontSize: 15,
+                      fontSize: 16,
                     ),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: Color(0xFF06462C),
                         width: 1.5,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: Color(0xFF06462C),
-                        width: 1.5,
+                        width: 0.8,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: AppColors.primary,
                         width: 2,
                       ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                      horizontal: 8,
+                      vertical: 8,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscurePassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
+                        size: 20,
                         color: const Color(0xFF06462C),
                       ),
                       onPressed: () {
@@ -220,10 +227,13 @@ class _SignupScreenState extends State<SignupScreen> {
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
 
                 // Confirm Password field
                 TextField(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.black
+                  ),
                   cursorColor: AppColors.primary,
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirmPassword,
@@ -231,40 +241,41 @@ class _SignupScreenState extends State<SignupScreen> {
                     hintText: 'confirm password',
                     hintStyle: TextStyle(
                       color: Colors.grey[400],
-                      fontSize: 15,
+                      fontSize: 16,
                     ),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: Color(0xFF06462C),
                         width: 1.5,
                       ),
                     ),
                     enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: Color(0xFF06462C),
-                        width: 1.5,
+                        width: 0.8,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
+                      borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
                         color: AppColors.primary,
                         width: 2,
                       ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                      horizontal: 8,
+                      vertical: 8,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
                         _obscureConfirmPassword
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
+                        size: 20,
                         color: const Color(0xFF06462C),
                       ),
                       onPressed: () {
@@ -281,14 +292,13 @@ class _SignupScreenState extends State<SignupScreen> {
                 // Get Started button
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _signup,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       elevation: 0,
                       disabledBackgroundColor: const Color(0xFF06462C).withOpacity(0.6),
@@ -306,7 +316,7 @@ class _SignupScreenState extends State<SignupScreen> {
                       'Get started',
                       style: TextStyle(
                         fontSize: 16,
-                        fontWeight: FontWeight.w600,
+                        fontWeight: FontWeight.w500,
                       ),
                     ),
                   ),

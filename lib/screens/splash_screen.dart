@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:redef_ai_main/core/supabase_config.dart';
 import 'package:redef_ai_main/screens/home_screen.dart';
-import 'package:redef_ai_main/screens/login_screen.dart';
 import 'onboarding_screen.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -19,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _navigateNext() async {
-    await Future.delayed(const Duration(seconds: 3));
+    await Future.delayed(const Duration(seconds: 2));
 
     final user = SupabaseConfig.client.auth.currentUser;
 
@@ -64,9 +63,9 @@ class _SplashScreenState extends State<SplashScreen> {
                           fontWeight: FontWeight.w500,
                           fontFamily: 'SourceSerif4',
                           letterSpacing: -1.5,
+                          height: 1
                         ),
                       ),
-                      const SizedBox(height: 12),
                       Text(
                         'Get more done with your day',
                         style: TextStyle(
@@ -83,11 +82,9 @@ class _SplashScreenState extends State<SplashScreen> {
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 48.0),
-                child: Image.asset(
-                  'assets/images/loading.png',
-                  height: 48,
-                  width: 48,
-                  fit: BoxFit.contain,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 1.0,
                 ),
               ),
             ],

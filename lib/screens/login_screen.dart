@@ -106,9 +106,10 @@ class _LoginScreenState extends State<LoginScreen> {
                   'Welcome to Redef',
                   style: TextStyle(
                     fontSize: 32,
-                    fontWeight: FontWeight.w600,
+                    fontWeight: FontWeight.w400,
                     color: Color(0xFF06462C),
                     letterSpacing: -0.5,
+                      fontFamily: 'SourceSerif4'
                   ),
                 ),
 
@@ -120,7 +121,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   style: TextStyle(
                     fontSize: 15,
                     color: Color(0xFF5A5A5A),
-                    height: 1.5,
+                    height: 1.2,
                   ),
                 ),
 
@@ -128,11 +129,15 @@ class _LoginScreenState extends State<LoginScreen> {
 
                 // Email field
                 TextField(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.black
+                  ),
                   controller: _emailController,
+                  cursorColor: AppColors.primary,
                   keyboardType: TextInputType.emailAddress,
                   decoration: InputDecoration(
                     hintText: 'email',
-                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -145,8 +150,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
-                        color: Color(0xFF4CAF50),
-                        width: 1.5,
+                        color: Color(0xFF06462C),
+                        width: 0.8,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -157,21 +162,25 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                      horizontal: 8,
+                      vertical: 8,
                     ),
                   ),
                 ),
 
-                const SizedBox(height: 16),
+                const SizedBox(height: 4),
 
                 // Password field
                 TextField(
+                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: AppColors.black
+                  ),
+                  cursorColor: AppColors.primary,
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
                     hintText: 'password',
-                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 15),
+                    hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
                     filled: true,
                     fillColor: Colors.white,
                     border: OutlineInputBorder(
@@ -184,8 +193,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
-                        color: Color(0xFF4CAF50),
-                        width: 1.5,
+                        color: Color(0xFF06462C),
+                        width: 0.8,
                       ),
                     ),
                     focusedBorder: OutlineInputBorder(
@@ -196,8 +205,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                     contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
+                      horizontal: 8,
+                      vertical: 8,
                     ),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -205,6 +214,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             ? Icons.visibility_outlined
                             : Icons.visibility_off_outlined,
                         color: const Color(0xFF06462C),
+                        size: 20,
                       ),
                       onPressed: () {
                         setState(() {
@@ -245,14 +255,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Login button
                 SizedBox(
                   width: double.infinity,
-                  height: 56,
+                  // height: 56,
                   child: ElevatedButton(
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(8),
                       ),
                       elevation: 0,
                       disabledBackgroundColor: const Color(

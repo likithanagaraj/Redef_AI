@@ -15,14 +15,13 @@ class DeepworkControls extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 30.0),
           child: SizedBox(
             width: double.infinity,
-            height: 60,
             child: ElevatedButton(
               onPressed: timer.isRunning ? timer.pause : timer.start,
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green.shade600,
                 foregroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
+                  borderRadius: BorderRadius.circular(8),
                 ),
                 elevation: 0,
               ),
@@ -32,14 +31,14 @@ class DeepworkControls extends StatelessWidget {
                   Text(
                     timer.isRunning ? 'Pause' : 'Start',
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 16,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
                   const SizedBox(width: 8),
                   Icon(
                     timer.isRunning ? Icons.pause : Icons.arrow_forward,
-                    size: 20,
+                    size: 16,
                   ),
                 ],
               ),
@@ -51,19 +50,18 @@ class DeepworkControls extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
             child: SizedBox(
               width: double.infinity,
-              height: 50,
               child: ElevatedButton(
                 onPressed: timer.skipBreak,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade300,
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   "Skip Break",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),
@@ -73,19 +71,18 @@ class DeepworkControls extends StatelessWidget {
             padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
             child: SizedBox(
               width: double.infinity,
-              height: 50,
               child: ElevatedButton(
                 onPressed: timer.reset,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.grey.shade300,
                   foregroundColor: Colors.black,
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
                 child: const Text(
                   "Reset",
-                  style: TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 16),
                 ),
               ),
             ),

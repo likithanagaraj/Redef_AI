@@ -26,7 +26,7 @@ class HabitCard extends StatelessWidget {
       child: Container(
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(8),
+          borderRadius: BorderRadius.circular(4),
           boxShadow: [
             BoxShadow(
               color: Colors.grey.withOpacity(0.1),
@@ -35,30 +35,35 @@ class HabitCard extends StatelessWidget {
             ),
           ],
         ),
-        child: Row(
-          children: [
-            Checkbox(
-              activeColor: Colors.grey.shade400,
-              value: habit.status,
-              onChanged: (_) => onToggle(),
-              side: const BorderSide(color: Colors.black, width: 2),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(4),
-              ),
-            ),
-            Expanded(
-              child: Text(
-                habit.name,
-                style: TextStyle(
-                  fontSize: 16,
-                  color: habit.status ? Colors.grey.shade500 : Colors.black,
-                  decoration: habit.status
-                      ? TextDecoration.lineThrough
-                      : TextDecoration.none,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 8),
+          child: Row(
+            children: [
+
+              Expanded(
+                child: Text(
+                  habit.name,
+                  style: TextStyle(
+                    fontSize: 16,
+                    color: habit.status ? Colors.grey.shade500 : Colors.black,
+                    decoration: habit.status
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
+                  ),
                 ),
               ),
-            ),
-          ],
+              Checkbox(
+                activeColor: Colors.grey.shade400,
+                value: habit.status,
+                onChanged: (_) => onToggle(),
+                side: const BorderSide(color: Colors.black, width: 2),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                visualDensity: VisualDensity.comfortable,
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -145,14 +150,13 @@ class DateSelector extends StatelessWidget {
               child: Stack(
                 children: [
                   Container(
-                    width: 55,
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    padding: const EdgeInsets.symmetric(vertical: 2,horizontal: 10),
                     decoration: BoxDecoration(
                       color:
                       isSelected ? AppColors.secondary : Colors.white,
                       border: Border.all(
                         color: AppColors.secondary,
-                        width: 1.5,
+                        width: 1,
                       ),
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -185,16 +189,16 @@ class DateSelector extends StatelessWidget {
                   ),
                   if (isToday && !isSelected)
                     Positioned(
-                      bottom: 2,
+                      bottom: 1,
                       left: 0,
                       right: 0,
                       child: Center(
                         child: Container(
-                          width: 4,
-                          height: 4,
+                          width: 38,
+                          height: 3,
                           decoration: BoxDecoration(
                             color: AppColors.secondary,
-                            shape: BoxShape.circle,
+                            shape: BoxShape.rectangle,
                           ),
                         ),
                       ),
@@ -284,69 +288,71 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
             ),
             const SizedBox(height: 24),
             TextField(
+              cursorColor: AppColors.primary,
               controller: nameController,
               decoration: InputDecoration(
                 hintText: 'Habit name',
                 hintStyle: TextStyle(color: Colors.grey.shade400),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
                     color: Colors.black,
                     width: 1.5,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
                     color: Colors.black,
                     width: 1.5,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
-                    color: Colors.black,
+                    color: AppColors.primary,
                     width: 2,
                   ),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
+                  horizontal: 8,
+                  vertical: 8,
                 ),
               ),
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 16),
             TextField(
+              cursorColor: AppColors.primary,
               controller: descriptionController,
               maxLines: 3,
               decoration: InputDecoration(
                 hintText: 'Description (optional)',
                 hintStyle: TextStyle(color: Colors.grey.shade400),
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
                     color: Colors.black,
                     width: 1.5,
                   ),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
                     color: Colors.black,
                     width: 1.5,
                   ),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
+                  borderRadius: BorderRadius.circular(8),
                   borderSide: const BorderSide(
-                    color: Colors.black,
+                    color: AppColors.primary,
                     width: 2,
                   ),
                 ),
                 contentPadding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 16,
+                  horizontal: 8,
+                  vertical: 8,
                 ),
               ),
               style: const TextStyle(fontSize: 16),
@@ -375,9 +381,8 @@ class _AddHabitDialogState extends State<AddHabitDialog> {
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primary,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
                   shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   elevation: 0,
                 ),
@@ -416,9 +421,9 @@ class EmptyHabitsState extends StatelessWidget {
           Icon(
             Icons.repeat_outlined,
             size: 80,
-            color: Colors.grey.shade400,
+            color: Colors.grey.shade500,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: 8),
           Text(
             'No habits yet',
             style: TextStyle(
@@ -427,19 +432,22 @@ class EmptyHabitsState extends StatelessWidget {
               fontWeight: FontWeight.w500,
             ),
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: 4),
           Text(
             'Tap + to add a new habit',
             style: TextStyle(
               fontSize: 14,
               color: Colors.grey.shade400,
+              fontFamily: 'Inter'
             ),
           ),
           const SizedBox(height: 24),
           ElevatedButton.icon(
             onPressed: onAddHabit,
-            icon: const Icon(Icons.add),
-            label: const Text('Add Your First Habit'),
+            icon: const Icon(Icons.add,color: Colors.white,),
+            label: const Text('Add Your First Habit',style: TextStyle(
+              color: Colors.white
+            ),),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
             ),

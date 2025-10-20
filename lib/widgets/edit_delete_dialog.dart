@@ -188,23 +188,27 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
 
   Widget _buildTaskNameField() {
     return TextField(
+      cursorColor: AppColors.primary,
       controller: _nameController,
       decoration: InputDecoration(
         hintText: 'Task name',
         hintStyle: TextStyle(color: Colors.grey.shade400),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.black, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.black, width: 0.8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 8,
+        ),
       ),
       style: const TextStyle(fontSize: 16),
     );
@@ -238,6 +242,7 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5
                 ),
               ),
               style: TextButton.styleFrom(
@@ -266,18 +271,21 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
         hintText: 'Enter new category name',
         hintStyle: TextStyle(color: Colors.grey.shade400),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.black, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.black, width: 0.8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 8,
+        ),
       ),
       style: const TextStyle(fontSize: 16),
     );
@@ -311,10 +319,10 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
             });
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
               color: isSelected ? AppColors.secondary : Colors.white,
-              border: Border.all(color: AppColors.secondary, width: 1.5),
+              border: Border.all(color: AppColors.secondary, width: 1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -334,35 +342,35 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
   Widget _buildActionButtons() {
     return Row(
       children: [
-        Expanded(
-          child: OutlinedButton(
-            onPressed: () => Navigator.pop(context),
-            style: OutlinedButton.styleFrom(
-              padding: const EdgeInsets.symmetric(vertical: 16),
-              side: BorderSide(color: AppColors.primary, width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-            child: Text(
-              'Cancel',
-              style: TextStyle(
-                color: AppColors.primary,
-                fontSize: 16,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ),
-        ),
-        const SizedBox(width: 12),
+        // Expanded(
+        //   child: OutlinedButton(
+        //     onPressed: () => Navigator.pop(context),
+        //     style: OutlinedButton.styleFrom(
+        //       padding: const EdgeInsets.symmetric(vertical: 16),
+        //       side: BorderSide(color: AppColors.primary, width: 1.5),
+        //       shape: RoundedRectangleBorder(
+        //         borderRadius: BorderRadius.circular(12),
+        //       ),
+        //     ),
+        //     child: Text(
+        //       'Cancel',
+        //       style: TextStyle(
+        //         color: AppColors.primary,
+        //         fontSize: 16,
+        //         fontWeight: FontWeight.w600,
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        // const SizedBox(width: 12),
         Expanded(
           child: ElevatedButton(
             onPressed: _handleUpdate,
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,
-              padding: const EdgeInsets.symmetric(vertical: 16),
+              // padding: const EdgeInsets.symmetric(vertical: 16),
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.circular(8),
               ),
               elevation: 0,
             ),

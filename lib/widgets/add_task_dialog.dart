@@ -131,23 +131,27 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 
   Widget _buildTaskNameField() {
     return TextField(
+      cursorColor: AppColors.primary,
       controller: _nameController,
       decoration: InputDecoration(
         hintText: 'Task name',
         hintStyle: TextStyle(color: Colors.grey.shade400),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.black, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Color(0xFF06462C), width: 0.8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 8,
+        ),
       ),
       style: const TextStyle(fontSize: 16),
     );
@@ -181,6 +185,7 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
                 style: TextStyle(
                   color: AppColors.primary,
                   fontWeight: FontWeight.w600,
+                  letterSpacing: 0.5
                 ),
               ),
               style: TextButton.styleFrom(
@@ -205,22 +210,26 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
   Widget _buildNewCategoryField() {
     return TextField(
       controller: _newCategoryController,
+      cursorColor: AppColors.primary,
       decoration: InputDecoration(
         hintText: 'Enter new category name',
         hintStyle: TextStyle(color: Colors.grey.shade400),
         border: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
+          borderRadius: BorderRadius.circular(8),
           borderSide: const BorderSide(color: Colors.black, width: 1.5),
         ),
         enabledBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 1.5),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: Colors.black, width: 0.8),
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.circular(12),
-          borderSide: const BorderSide(color: Colors.black, width: 2),
+          borderRadius: BorderRadius.circular(8),
+          borderSide: const BorderSide(color: AppColors.primary, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 8,
+          vertical: 8,
+        ),
       ),
       style: const TextStyle(fontSize: 16),
     );
@@ -228,10 +237,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
 
   Widget _buildEmptyCategoryState() {
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
       decoration: BoxDecoration(
         color: Colors.grey.shade100,
-        borderRadius: BorderRadius.circular(12),
+        borderRadius: BorderRadius.circular(4),
         border: Border.all(color: Colors.grey.shade300),
       ),
       child: Text(
@@ -254,10 +263,10 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
             });
           },
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
               color: isSelected ? AppColors.secondary : Colors.white,
-              border: Border.all(color: AppColors.secondary, width: 1.5),
+              border: Border.all(color: AppColors.secondary, width: 1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
@@ -281,9 +290,8 @@ class _AddTaskDialogState extends State<AddTaskDialog> {
         onPressed: _handleSubmit,
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.secondary,
-          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8),
           ),
           elevation: 0,
         ),

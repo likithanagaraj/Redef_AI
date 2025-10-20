@@ -104,7 +104,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
           return ListView.separated(
             padding: const EdgeInsets.all(16),
             itemCount: provider.habits.length,
-            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            separatorBuilder: (_, __) => const SizedBox(height: 6),
             itemBuilder: (context, index) {
               final habit = provider.habits[index];
               return HabitCard(

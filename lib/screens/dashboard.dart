@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redef_ai_main/Theme.dart';
 import '../core/supabase_config.dart';
 
 class DashboardScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int habitsDone = 0;
   final user = SupabaseConfig.client.auth.currentUser;
 
+
   @override
   void initState() {
     super.initState();
@@ -27,6 +29,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     loadHabits();
     loadPomodoros();
   }
+
 
   Future<void> fetchTaskData() async {
     final user = SupabaseConfig.client.auth.currentUser;
@@ -157,7 +160,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
 
   @override
+
   Widget build(BuildContext context) {
+    int hours = pomodoroMinutes ~/ 60;
+    int minutes = pomodoroMinutes % 60;
     return Scaffold(
       body: SafeArea(
         child: isLoading
@@ -184,29 +190,21 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             fontFamily: 'SourceSerif4',
                             fontWeight: FontWeight.w400,
                             letterSpacing: -2,
+                            color: Color(0xFF014E3C)
                           ),
                         ),
                         SizedBox(width: 8),
-                        Text(
-                          '👋',
-                          style: TextStyle(fontSize: 32),
-                        ),
+                        Icon(Icons.waving_hand_outlined,color: Color(0xFF014E3C),)
                       ],
                     ),
                     const SizedBox(height: 32),
                     // Progress Card
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.08),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -214,7 +212,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           const Text(
                             'Your Progress Now',
                             style: TextStyle(
-                              fontSize: 20,
+                              fontSize: 18,
                               fontFamily: 'SourceSerif4',
                               fontWeight: FontWeight.w600,
                               letterSpacing: -0.3,
@@ -245,7 +243,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ],
                           ),
-                          const SizedBox(height: 16),
+                          const SizedBox(height: 4),
                           // Progress Stats
                           Row(
                             mainAxisAlignment:
@@ -254,7 +252,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               Text(
                                 '$completedTasks/$totalTasks Tasks Completed',
                                 style: const TextStyle(
-                                  fontSize: 16,
+                                  fontSize: 14,
                                   fontWeight: FontWeight.w500,
                                   letterSpacing: -0.2,
                                 ),
@@ -273,20 +271,14 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                     // Pomodoro Card
                     Container(
-                      padding: const EdgeInsets.all(12),
+                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 10),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(8),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.08),
-                            blurRadius: 12,
-                            offset: const Offset(0, 4),
-                          ),
-                        ],
+
                       ),
                       child: Row(
                         children: [
@@ -318,9 +310,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                     letterSpacing: -0.2,
                                   ),
                                 ),
-                                const SizedBox(height: 4),
+                                const SizedBox(height: 0),
                                 Text(
-                                  '$pomodoroMinutes minutes',
+                                  '${hours}h ${minutes}m',
                                   style: const TextStyle(
                                     fontSize: 22,
                                     fontFamily: 'SourceSerif4',
@@ -339,7 +331,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         ],
                       ),
                     ),
-                    const SizedBox(height: 24),
+                    const SizedBox(height: 12),
                     // Habits Done Card
                     // Container(
                     //   padding: const EdgeInsets.all(12),
