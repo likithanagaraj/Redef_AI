@@ -1,6 +1,12 @@
+// lib/screens/dashboard_screen.dart
+
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:redef_ai_main/Theme.dart';
+import 'package:redef_ai_main/widgets/quote_carousel.dart';
+import 'package:redef_ai_main/widgets/user_stats_bento.dart';
 import '../core/supabase_config.dart';
+import '../providers/habit_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -11,30 +17,29 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   List tasks = [];
-  List habits =[];
   List pomodoros = [];
   bool isLoading = true;
   int completedTasks = 0;
   int totalTasks = 0;
   double completionPercentage = 0.0;
   int pomodoroMinutes = 0;
-  int habitsDone = 0;
   final user = SupabaseConfig.client.auth.currentUser;
-
 
   @override
   void initState() {
     super.initState();
-    fetchTaskData();
-    loadHabits();
-    loadPomodoros();
-  }
 
+    // Wrap async calls to prevent setState during build
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      fetchTaskData();
+      loadPomodoros();
+    });
+  }
 
   Future<void> fetchTaskData() async {
     final user = SupabaseConfig.client.auth.currentUser;
     if (user != null) {
-      print('✅$user.id'); // auth_user_id
+      print('✅${user.id}'); // auth_user_id
       print(user.email);
     }
     setState(() => isLoading = true);
@@ -44,6 +49,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
           .from('tasks')
           .select('id, name, is_completed, category, completed_at')
           .order('created_at', ascending: false);
+      print('✅ Fetched tasks count: ${response.length}');
+      print('✅ Fetched tasks : $response');
 
       setState(() {
         tasks = response;
@@ -68,7 +75,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     final userRow = await SupabaseConfig.client
         .from('users')
         .select('id')
-        .eq('auth_user_id', authUserId)
+        .eq('id', authUserId)
         .maybeSingle();
 
     if (userRow == null) return [];
@@ -79,91 +86,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
         .from('pomodoros')
         .select()
         .eq('user_id', internalUserId)
-        .order('session_completed_at', ascending: false); // latest first
+        .order('session_completed_at', ascending: false);
 
     return List<Map<String, dynamic>>.from(response);
   }
-
-
-  Future<List<Map<String, dynamic>>> fetchHabits() async {
-    final authUserId = SupabaseConfig.client.auth.currentUser?.id;
-    if (authUserId == null) return [];
-
-    // get internal user id first
-    final userRow = await SupabaseConfig.client
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', authUserId)
-        .maybeSingle();
-
-    if (userRow == null) return [];
-
-    final internalUserId = userRow['id'];
-
-    // fetch habits
-    final response = await SupabaseConfig.client
-        .from('habit')
-        .select()
-        .eq('user_id', internalUserId);
-
-    return List<Map<String, dynamic>>.from(response);
-  }
-
-  void loadHabits() async {
-    final authUserId = SupabaseConfig.client.auth.currentUser?.id;
-    if (authUserId == null) return;
-
-    // get internal user id
-    final userRow = await SupabaseConfig.client
-        .from('users')
-        .select('id')
-        .eq('auth_user_id', authUserId)
-        .maybeSingle();
-
-    if (userRow == null) return;
-
-    final internalUserId = userRow['id'];
-
-    // fetch habits
-    final fetchedHabits = await SupabaseConfig.client
-        .from('habit')
-        .select()
-        .eq('user_id', internalUserId);
-
-    // fetch completed habit logs
-    final completedLogs = await SupabaseConfig.client
-        .from('habit_logs')
-        .select('id, habit_id')
-        .eq('user_id', internalUserId)
-        .eq('status', true); // only completed logs
-
-    setState(() {
-      habits = List<Map<String, dynamic>>.from(fetchedHabits);
-      habitsDone = (completedLogs as List).length; // count of completed logs
-    });
-  }
-
 
   void loadPomodoros() async {
     final fetchedPomodoros = await fetchPomodoros();
     int totalSeconds = 0;
 
     for (var session in fetchedPomodoros) {
-      totalSeconds += session['focus_time'] as int; // focus_time in seconds
+      totalSeconds += session['focus_time'] as int;
     }
 
     setState(() {
       pomodoros = fetchedPomodoros;
-      pomodoroMinutes = (totalSeconds / 60).round(); // convert to minutes
+      pomodoroMinutes = (totalSeconds / 60).round();
     });
   }
 
-
   @override
-
   Widget build(BuildContext context) {
     int hours = pomodoroMinutes ~/ 60;
     int minutes = pomodoroMinutes % 60;
+
     return Scaffold(
       body: SafeArea(
         child: isLoading
@@ -186,217 +132,38 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         Text(
                           'Welcome',
                           style: TextStyle(
-                            fontSize: 36,
+                            fontSize: 34,
                             fontFamily: 'SourceSerif4',
                             fontWeight: FontWeight.w400,
                             letterSpacing: -2,
-                            color: Color(0xFF014E3C)
+                            color: AppColors.black,
                           ),
                         ),
                         SizedBox(width: 8),
-                        Icon(Icons.waving_hand_outlined,color: Color(0xFF014E3C),)
+                        Icon(
+                          Icons.waving_hand_outlined,
+                          color: AppColors.black,
+                          size: 30,
+                        )
                       ],
                     ),
                     const SizedBox(height: 32),
-                    // Progress Card
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
+                    QuoteCarousel(),
+                    const SizedBox(height: 5),
 
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          const Text(
-                            'Your Progress Now',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontFamily: 'SourceSerif4',
-                              fontWeight: FontWeight.w600,
-                              letterSpacing: -0.3,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          // Progress Bar
-                          Row(
-                            children: [
-                              Expanded(
-                                child: ClipRRect(
-                                  borderRadius:
-                                  BorderRadius.circular(8),
-                                  child: LinearProgressIndicator(
-                                    value: totalTasks > 0
-                                        ? completedTasks / totalTasks
-                                        : 0.0,
-                                    minHeight: 12,
-                                    backgroundColor:
-                                    Colors.grey.shade300,
-                                    valueColor:
-                                    const AlwaysStoppedAnimation<
-                                        Color>(
-                                      Color(0xFF014E3C),
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 4),
-                          // Progress Stats
-                          Row(
-                            mainAxisAlignment:
-                            MainAxisAlignment.spaceBetween,
-                            children: [
-                              Text(
-                                '$completedTasks/$totalTasks Tasks Completed',
-                                style: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w500,
-                                  letterSpacing: -0.2,
-                                ),
-                              ),
-                              Text(
-                                '${completionPercentage.toInt()}%',
-                                style: const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.w600,
-                                  color: Color(0xFF014E3C),
-                                  letterSpacing: -0.3,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
+                    // Use Consumer to get real-time habit stats
+                    Consumer<HabitProvider>(
+                      builder: (context, habitProvider, _) {
+                        return UserStatsBento(
+                          completedTasks: completedTasks,
+                          pendingTasks: totalTasks - completedTasks,
+                          pomodoroHours: hours,
+                          pomodoroMinutes: minutes,
+                          habitsDone: habitProvider.todayCompletedHabits,
+                          totalHabits: habitProvider.todayTotalHabits,
+                        );
+                      },
                     ),
-                    const SizedBox(height: 12),
-                    // Pomodoro Card
-                    Container(
-                      padding: const EdgeInsets.symmetric(vertical: 8,horizontal: 10),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: const Color(0xFF014E3C)
-                                  .withOpacity(0.1),
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: const Icon(
-                              Icons.timer,
-                              color: Color(0xFF014E3C),
-                              size: 24,
-                            ),
-                          ),
-                          const SizedBox(width: 16),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment:
-                              CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'Pomodoro Time',
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.grey,
-                                    letterSpacing: -0.2,
-                                  ),
-                                ),
-                                const SizedBox(height: 0),
-                                Text(
-                                  '${hours}h ${minutes}m',
-                                  style: const TextStyle(
-                                    fontSize: 22,
-                                    fontFamily: 'SourceSerif4',
-                                    fontWeight: FontWeight.w600,
-                                    color: Color(0xFF014E3C),
-                                    letterSpacing: -0.3,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          // Text(
-                          //   '🍅',
-                          //   style: TextStyle(fontSize: 28),
-                          // ),
-                        ],
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    // Habits Done Card
-                    // Container(
-                    //   padding: const EdgeInsets.all(12),
-                    //   decoration: BoxDecoration(
-                    //     color: Colors.white,
-                    //     borderRadius: BorderRadius.circular(8),
-                    //     boxShadow: [
-                    //       BoxShadow(
-                    //         color: Colors.grey.withOpacity(0.08),
-                    //         blurRadius: 12,
-                    //         offset: const Offset(0, 4),
-                    //       ),
-                    //     ],
-                    //   ),
-                    //   child: Row(
-                    //     children: [
-                    //       Container(
-                    //         padding: const EdgeInsets.all(12),
-                    //         decoration: BoxDecoration(
-                    //           color: const Color(0xFF014E3C)
-                    //               .withOpacity(0.1),
-                    //           borderRadius: BorderRadius.circular(8),
-                    //         ),
-                    //         child: const Icon(
-                    //           Icons.favorite,
-                    //           color: Color(0xFF014E3C),
-                    //           size: 24,
-                    //         ),
-                    //       ),
-                    //       const SizedBox(width: 16),
-                    //       Expanded(
-                    //         child: Column(
-                    //           crossAxisAlignment:
-                    //           CrossAxisAlignment.start,
-                    //           children: [
-                    //             const Text(
-                    //               'Habits Completed',
-                    //               style: TextStyle(
-                    //                 fontSize: 14,
-                    //                 fontWeight: FontWeight.w500,
-                    //                 color: Colors.grey,
-                    //                 letterSpacing: -0.2,
-                    //               ),
-                    //             ),
-                    //             const SizedBox(height: 4),
-                    //             Text(
-                    //               '$habitsDone habits',
-                    //               style: const TextStyle(
-                    //                 fontSize: 22,
-                    //                 fontFamily: 'SourceSerif4',
-                    //                 fontWeight: FontWeight.w600,
-                    //                 color: Color(0xFF014E3C),
-                    //                 letterSpacing: -0.3,
-                    //               ),
-                    //             ),
-                    //           ],
-                    //         ),
-                    //       ),
-                    //       // Text(
-                    //       //   '⭐',
-                    //       //   style: TextStyle(fontSize: 28),
-                    //       // ),
-                    //     ],
-                    //   ),
-                    // ),
                   ],
                 ),
               ),

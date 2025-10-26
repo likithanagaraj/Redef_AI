@@ -40,7 +40,6 @@ class TaskProvider extends ChangeNotifier {
 
     try {
       _userId = await _taskService.getUserId();
-
       if (_userId == null) {
         _setStatus(TaskStatus.error);
         _errorMessage = 'User not authenticated';
@@ -63,6 +62,14 @@ class TaskProvider extends ChangeNotifier {
     try {
       _tasks = await _taskService.fetchTasks(_userId!);
       _categories = _taskService.extractCategories(_tasks);
+      // ✅ Print all tasks nicely
+      print('🎁 Fetched ${userId} tasks:');
+      print('✅ Fetched ${_tasks.length} tasks:');
+      for (var task in _tasks) {
+        print(
+            '• ${task.name} - ${task.isCompleted ? "Completed" : "Pending"} - Category: ${task.category ?? "None"} - CompletedAt: ${task.completedAt}'
+        );
+      }
       _setStatus(TaskStatus.success);
     } catch (e) {
       _setStatus(TaskStatus.error);
@@ -95,6 +102,8 @@ class TaskProvider extends ChangeNotifier {
     }
   }
 
+// Improved version of toggleTaskCompletion method
+
   Future<void> toggleTaskCompletion(String taskId) async {
     final taskIndex = _tasks.indexWhere((t) => t.id == taskId);
     if (taskIndex == -1) return;
@@ -102,6 +111,7 @@ class TaskProvider extends ChangeNotifier {
     final task = _tasks[taskIndex];
     final newCompletionStatus = !task.isCompleted;
 
+    // Optimistic update
     _tasks[taskIndex] = task.copyWith(
       isCompleted: newCompletionStatus,
       completedAt: newCompletionStatus ? DateTime.now() : null,
@@ -109,18 +119,28 @@ class TaskProvider extends ChangeNotifier {
     notifyListeners();
 
     try {
+      // Update database
       await _taskService.updateTaskCompletion(
         taskId: taskId,
         isCompleted: newCompletionStatus,
       );
+
+      // Refetch the specific task to get the accurate server timestamp
+      final updatedTask = await _taskService.fetchTaskById(taskId);
+      _tasks[taskIndex] = updatedTask;
+      notifyListeners();
+
     } catch (e) {
+      // Revert on failure
       _tasks[taskIndex] = task;
       _errorMessage = e.toString();
       notifyListeners();
       print('Error toggling task completion: $e');
+
+      // Rethrow to let UI show error notification
+      rethrow;
     }
   }
-
   Future<bool> updateTask({
     required String taskId,
     String? name,

@@ -27,6 +27,31 @@ class HabitProvider extends ChangeNotifier {
   List<Habit> get completedHabits =>
       _habits.where((h) => h.status).toList();
 
+  // NEW: Today's habit stats
+  int get todayCompletedHabits {
+    final today = DateTime.now();
+    final normalizedToday = DateTime(today.year, today.month, today.day);
+    final normalizedSelected = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+
+    // Only return today's stats if selected date is today
+    if (normalizedSelected.isAtSameMomentAs(normalizedToday)) {
+      return _habits.where((h) => h.status).length;
+    }
+    return 0;
+  }
+
+  int get todayTotalHabits {
+    final today = DateTime.now();
+    final normalizedToday = DateTime(today.year, today.month, today.day);
+    final normalizedSelected = DateTime(_selectedDate.year, _selectedDate.month, _selectedDate.day);
+
+    // Only return today's stats if selected date is today
+    if (normalizedSelected.isAtSameMomentAs(normalizedToday)) {
+      return _habits.length;
+    }
+    return 0;
+  }
+
   // Initialize provider and set up real-time listeners
   Future<void> initialize() async {
     await loadHabits();

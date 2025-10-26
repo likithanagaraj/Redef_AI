@@ -28,7 +28,7 @@ class _RedefScreenState extends State<RedefScreen> {
             height: 180,
             fit: BoxFit.contain,
           ),
-          Text('Comming Soon',style: TextStyle(
+          Text('Coming Soon',style: TextStyle(
             fontFamily: 'SourceSerif4',
             fontSize: 18,
             letterSpacing: -0.5,

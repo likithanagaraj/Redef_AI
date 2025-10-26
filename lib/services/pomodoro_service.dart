@@ -14,7 +14,7 @@ class PomodoroService {
     final userRow = await SupabaseConfig.client
         .from('users')
         .select('id')
-        .eq('auth_user_id', authUserId)
+        .eq('id', authUserId)
         .maybeSingle();
 
     if (userRow == null) return;

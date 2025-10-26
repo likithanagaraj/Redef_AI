@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import '../services/pomodoro_service.dart';
 import 'package:audioplayers/audioplayers.dart';
 class DeepworkTimer extends ChangeNotifier {
-  final List<int> presetTimes = [5 * 60,15 * 60, 25 * 60, 35 * 60,45 * 60,];
+  final List<int> presetTimes = [5 * 60,10 * 60,15 * 60,20 * 60, 25 * 60,30 * 60, 35 * 60 ,40 * 60,  45 * 60 ,50 * 60,55 * 60,60 * 60   ];
   final int shortBreakSeconds = 5 * 60;
   final int longBreakSeconds = 15 * 60;
   final player = AudioPlayer();

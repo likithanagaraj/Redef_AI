@@ -144,7 +144,7 @@ class DateSelector extends StatelessWidget {
           final isToday = _isToday(date);
 
           return Padding(
-            padding: const EdgeInsets.only(right: 8),
+            padding: const EdgeInsets.only(right: 4.4),
             child: GestureDetector(
               onTap: () => onDateSelected(date),
               child: Stack(
@@ -446,7 +446,8 @@ class EmptyHabitsState extends StatelessWidget {
             onPressed: onAddHabit,
             icon: const Icon(Icons.add,color: Colors.white,),
             label: const Text('Add Your First Habit',style: TextStyle(
-              color: Colors.white
+              color: Colors.white,
+              fontSize: 16
             ),),
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.primary,

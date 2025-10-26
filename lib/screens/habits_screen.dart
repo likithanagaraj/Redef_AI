@@ -15,14 +15,7 @@ class HabitsScreen extends StatefulWidget {
 }
 
 class _HabitsScreenState extends State<HabitsScreen> {
-  late HabitProvider _habitProvider;
 
-  @override
-  void initState() {
-    super.initState();
-    _habitProvider = Provider.of<HabitProvider>(context, listen: false);
-    _habitProvider.initialize();
-  }
 
   @override
   Widget build(BuildContext context) {

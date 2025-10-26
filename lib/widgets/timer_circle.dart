@@ -28,22 +28,25 @@ class TimerCircle extends StatelessWidget {
             Text(
               timer.formatTime(timer.remainingSeconds),
               style: const TextStyle(
-                fontSize: 78,
+                fontSize: 82,
                 fontWeight: FontWeight.w300,
                 letterSpacing: -2,
               ),
-            ),
-            const SizedBox(height: 10),
-            if(!timer.isRunning && !timer.isPaused)  _TimeAdjustmentControls(),
-            const SizedBox(height: 10),
-            Text(
-              'Session: ${timer.completedWorkSessions % 4}/4',
-              style: TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey.shade700,
+              textHeightBehavior: const TextHeightBehavior(
+                applyHeightToFirstAscent: false,
+                applyHeightToLastDescent: false,
               ),
             ),
+            if(!timer.isRunning && !timer.isPaused)  _TimeAdjustmentControls(),
+            // const SizedBox(height: 10),
+            // Text(
+            //   'Session: ${timer.completedWorkSessions % 4}/4',
+            //   style: TextStyle(
+            //     fontSize: 16,
+            //     fontWeight: FontWeight.w500,
+            //     color: Colors.grey.shade700,
+            //   ),
+            // ),
           ],
         ),
       ],
@@ -68,7 +71,7 @@ class _TimeAdjustmentControls extends StatelessWidget {
                 : Colors.green.shade700,
           ),
         ),
-        const SizedBox(width: 40),
+        const SizedBox(width: 10),
         IconButton(
           onPressed: timer.isRunning ? null : timer.increaseTime,
           icon: Icon(
