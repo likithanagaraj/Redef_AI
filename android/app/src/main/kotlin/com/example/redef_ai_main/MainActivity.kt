@@ -1,4 +1,4 @@
-package com.example.redef_ai_main
+package com.redefai.app
 
 import io.flutter.embedding.android.FlutterActivity
 

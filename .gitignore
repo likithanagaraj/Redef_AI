@@ -45,6 +45,6 @@ app.*.map.json
 /android/app/release
 # Flutter environment files
 .env
-key.properties
+android/key.properties
 app/upload-keystore.jks
 

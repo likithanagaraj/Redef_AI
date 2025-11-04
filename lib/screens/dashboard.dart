@@ -93,16 +93,17 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
   void loadPomodoros() async {
     final fetchedPomodoros = await fetchPomodoros();
-    int totalSeconds = 0;
+    int totalMinutes  = 0;
 
     for (var session in fetchedPomodoros) {
-      totalSeconds += session['focus_time'] as int;
+      totalMinutes += (session['focus_time'] as int);
     }
 
     setState(() {
       pomodoros = fetchedPomodoros;
-      pomodoroMinutes = (totalSeconds / 60).round();
+      pomodoroMinutes = totalMinutes;
     });
+
   }
 
   @override

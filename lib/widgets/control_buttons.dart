@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:redef_ai_main/Theme.dart';
 import '../../providers/deepwork_timer.dart';
 
 class DeepworkControls extends StatelessWidget {
@@ -9,47 +10,51 @@ class DeepworkControls extends StatelessWidget {
   Widget build(BuildContext context) {
     final timer = context.watch<DeepworkTimer>();
 
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 30.0),
-          child: SizedBox(
-            width: double.infinity,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // Start / Pause button
+          Expanded(
+            flex: 2,
             child: ElevatedButton(
               onPressed: timer.isRunning ? timer.pause : timer.start,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.green.shade600,
-                foregroundColor: Colors.white,
+                backgroundColor: AppColors.primary,
+                foregroundColor: AppColors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(8),
                 ),
                 elevation: 0,
+                padding: const EdgeInsets.symmetric(vertical: 14),
               ),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    timer.isRunning ? 'Pause' : 'Start',
+                    timer.isRunning ? 'Pause Session' : 'Start Session',
                     style: const TextStyle(
-                      fontSize: 16,
+                      fontSize: 15,
                       fontWeight: FontWeight.w500,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  const SizedBox(width: 6),
                   Icon(
-                    timer.isRunning ? Icons.pause : Icons.arrow_forward,
-                    size: 16,
+                    timer.isRunning ? Icons.pause : Icons.play_arrow,
+                    size: 18,
                   ),
                 ],
               ),
             ),
           ),
-        ),
-        if (!timer.isWorkSession)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-            child: SizedBox(
-              width: double.infinity,
+
+          const SizedBox(width: 12),
+
+          // Skip Break button
+          if (!timer.isWorkSession)
+            Expanded(
+              flex: 1,
               child: ElevatedButton(
                 onPressed: timer.skipBreak,
                 style: ElevatedButton.styleFrom(
@@ -58,19 +63,21 @@ class DeepworkControls extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: const Text(
-                  "Skip Break",
-                  style: TextStyle(fontSize: 16),
+                  "Skip ",
+                  style: TextStyle(fontSize: 15),
                 ),
               ),
             ),
-          ),
-        if (timer.isPaused)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 30.0, vertical: 10),
-            child: SizedBox(
-              width: double.infinity,
+
+          if (!timer.isWorkSession) const SizedBox(width: 12),
+
+          // Reset button
+          if (timer.isPaused)
+            Expanded(
+              flex: 1,
               child: ElevatedButton(
                 onPressed: timer.reset,
                 style: ElevatedButton.styleFrom(
@@ -79,15 +86,16 @@ class DeepworkControls extends StatelessWidget {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
                   ),
+                  padding: const EdgeInsets.symmetric(vertical: 14),
                 ),
                 child: const Text(
-                  "Reset",
-                  style: TextStyle(fontSize: 16),
+                  "Reset ",
+                  style: TextStyle(fontSize: 15),
                 ),
               ),
             ),
-          ),
-      ],
+        ],
+      ),
     );
   }
 }

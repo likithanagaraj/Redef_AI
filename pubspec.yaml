@@ -4,8 +4,7 @@ description: "AI first productivity System"
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.0.0+1
-
+version: 1.0.0+2
 environment:
   sdk: ^3.9.2
 
@@ -20,7 +19,11 @@ dependencies:
   provider: ^6.0.5
   audioplayers: ^6.5.1
   fl_chart: ^1.1.1
-
+  brick_offline_first_with_supabase: ^1.0.0
+  sqflite: ^2.3.0
+  brick_sqlite: ^3.1.0
+  uuid: ^3.0.4
+  dashed_circular_progress_bar: ^0.0.6
 
 
 dev_dependencies:
@@ -28,6 +31,8 @@ dev_dependencies:
     sdk: flutter
   flutter_lints: ^5.0.0
   flutter_launcher_icons: "^0.14.4"
+  brick_offline_first_with_supabase_build: ^1.0.0
+  build_runner: ^2.4.0
 
 flutter_icons:
   android: true

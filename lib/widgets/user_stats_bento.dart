@@ -259,17 +259,58 @@ class UserStatsBento extends StatelessWidget {
                                           const SizedBox(height: 4),
                                           FittedBox(
                                             fit: BoxFit.scaleDown,
-                                            child: Text(
-                                              '${pomodoroHours}hr ${pomodoroMinutes}min',
-                                              style: TextStyle(
-                                                fontFamily: 'SourceSerif4',
-                                                fontSize: 22,
-                                                fontWeight: FontWeight.w600,
-                                                height: 1.0,
-                                                letterSpacing: -0.5,
+                                            child: RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  if (pomodoroHours > 0) ...[
+                                                    TextSpan(
+                                                      text: '$pomodoroHours',
+                                                      style: const TextStyle(
+                                                        fontFamily: 'SourceSerif4',
+                                                        fontSize: 28, // Bigger font for hours
+                                                        fontWeight: FontWeight.w700,
+                                                        height: 1.0,
+                                                        color: Colors.black,
+                                                        letterSpacing: -0.5,
+                                                      ),
+                                                    ),
+                                                    const TextSpan(
+                                                      text: ' hr ',
+                                                      style: TextStyle(
+                                                        fontFamily: 'Inter',
+                                                        fontSize: 16,
+                                                        fontWeight: FontWeight.w500,
+                                                        color: Colors.black87,
+                                                        height: 1.0,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                  TextSpan(
+                                                    text: '$pomodoroMinutes',
+                                                    style: TextStyle(
+                                                      fontFamily: 'SourceSerif4',
+                                                      fontSize: pomodoroHours > 0 ? 20 : 28, // If only minutes, make it larger
+                                                      fontWeight: FontWeight.w600,
+                                                      color: Colors.black,
+                                                      height: 1.0,
+                                                      letterSpacing: -0.3,
+                                                    ),
+                                                  ),
+                                                  const TextSpan(
+                                                    text: ' min',
+                                                    style: TextStyle(
+                                                      fontFamily: 'Inter',
+                                                      fontSize: 16,
+                                                      fontWeight: FontWeight.w500,
+                                                      color: Colors.black87,
+                                                      height: 1.0,
+                                                    ),
+                                                  ),
+                                                ],
                                               ),
                                             ),
                                           ),
+
                                         ],
                                       ),
                                     ],
@@ -380,7 +421,7 @@ class UserStatsBento extends StatelessWidget {
 
           const SizedBox(height: spacing),
 
-          // // Energy Curve Row
+          // Energy Curve Row
           // Row(
           //   children: [
           //     Expanded(
@@ -437,135 +478,135 @@ class UserStatsBento extends StatelessWidget {
           //     ),
           //   ],
           // ),
-          //
-          // const SizedBox(height: spacing),
+
+          const SizedBox(height: spacing),
 
           // Bottom Row - Quick Win & Facts
-          Row(
-            children: [
-              // Quick Win
-              Expanded(
-                child: Container(
-                  height: screenWidth * 0.22,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.lightbulb_outline,
-                            size: 16,
-                            color: AppColors.black,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              'Quick Win',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                letterSpacing: -0.6,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              pendingTasks > 0
-                                  ? 'Complete $pendingTasks pending task${pendingTasks > 1 ? 's' : ''}'
-                                  : 'All tasks completed! 🎉',
-                              style: TextStyle(
-                                fontFamily: 'Inter',
-                                fontSize: 10,
-                                letterSpacing: 0,
-                                color: Colors.black.withOpacity(0.5),
-                                fontWeight: FontWeight.w500,
-                                height: 1.3,
-                              ),
-                              maxLines: 2,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.arrow_forward_ios,
-                            color: Colors.black.withOpacity(0.5),
-                            size: 16,
-                          )
-                        ],
-                      )
-                    ],
-                  ),
-                ),
-              ),
-
-              const SizedBox(width: spacing),
-
-              // Facts About You
-              Expanded(
-                child: Container(
-                  height: screenWidth * 0.22,
-                  decoration: BoxDecoration(
-                    color: AppColors.white,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  padding: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Row(
-                        children: [
-                          Icon(
-                            Icons.person_outline,
-                            size: 16,
-                            color: AppColors.black,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              'Facts About You',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w500,
-                                fontSize: 16,
-                                letterSpacing: -0.6,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        'You\'re most productive between 9-11 AM',
-                        style: TextStyle(
-                          fontFamily: 'Inter',
-                          fontSize: 10,
-                          letterSpacing: 0,
-                          color: Colors.black.withOpacity(0.5),
-                          height: 1.3,
-                          fontWeight: FontWeight.w500,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
+          // Row(
+          //   children: [
+          //     // Quick Win
+          //     Expanded(
+          //       child: Container(
+          //         height: screenWidth * 0.22,
+          //         decoration: BoxDecoration(
+          //           color: AppColors.white,
+          //           borderRadius: BorderRadius.circular(8),
+          //         ),
+          //         padding: const EdgeInsets.all(10),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           mainAxisSize: MainAxisSize.min,
+          //           children: [
+          //             Row(
+          //               children: [
+          //                 Icon(
+          //                   Icons.lightbulb_outline,
+          //                   size: 16,
+          //                   color: AppColors.black,
+          //                 ),
+          //                 const SizedBox(width: 4),
+          //                 Flexible(
+          //                   child: Text(
+          //                     'Quick Win',
+          //                     style: TextStyle(
+          //                       fontWeight: FontWeight.w500,
+          //                       fontSize: 16,
+          //                       letterSpacing: -0.6,
+          //                     ),
+          //                     overflow: TextOverflow.ellipsis,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //             const SizedBox(height: 6),
+          //             Row(
+          //               children: [
+          //                 Expanded(
+          //                   child: Text(
+          //                     pendingTasks > 0
+          //                         ? 'Complete $pendingTasks pending task${pendingTasks > 1 ? 's' : ''}'
+          //                         : 'All tasks completed! 🎉',
+          //                     style: TextStyle(
+          //                       fontFamily: 'Inter',
+          //                       fontSize: 10,
+          //                       letterSpacing: 0,
+          //                       color: Colors.black.withOpacity(0.5),
+          //                       fontWeight: FontWeight.w500,
+          //                       height: 1.3,
+          //                     ),
+          //                     maxLines: 2,
+          //                     overflow: TextOverflow.ellipsis,
+          //                   ),
+          //                 ),
+          //                 const SizedBox(width: 8),
+          //                 Icon(
+          //                   Icons.arrow_forward_ios,
+          //                   color: Colors.black.withOpacity(0.5),
+          //                   size: 16,
+          //                 )
+          //               ],
+          //             )
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //
+          //     const SizedBox(width: spacing),
+          //
+          //     // Facts About You
+          //     Expanded(
+          //       child: Container(
+          //         height: screenWidth * 0.22,
+          //         decoration: BoxDecoration(
+          //           color: AppColors.white,
+          //           borderRadius: BorderRadius.circular(8),
+          //         ),
+          //         padding: const EdgeInsets.all(10),
+          //         child: Column(
+          //           crossAxisAlignment: CrossAxisAlignment.start,
+          //           mainAxisSize: MainAxisSize.min,
+          //           children: [
+          //             Row(
+          //               children: [
+          //                 Icon(
+          //                   Icons.person_outline,
+          //                   size: 16,
+          //                   color: AppColors.black,
+          //                 ),
+          //                 const SizedBox(width: 4),
+          //                 Flexible(
+          //                   child: Text(
+          //                     'Facts About You',
+          //                     style: TextStyle(
+          //                       fontWeight: FontWeight.w500,
+          //                       fontSize: 16,
+          //                       letterSpacing: -0.6,
+          //                     ),
+          //                     overflow: TextOverflow.ellipsis,
+          //                   ),
+          //                 ),
+          //               ],
+          //             ),
+          //             const SizedBox(height: 6),
+          //             Text(
+          //               'You\'re most productive between 9-11 AM',
+          //               style: TextStyle(
+          //                 fontFamily: 'Inter',
+          //                 fontSize: 10,
+          //                 letterSpacing: 0,
+          //                 color: Colors.black.withOpacity(0.5),
+          //                 height: 1.3,
+          //                 fontWeight: FontWeight.w500,
+          //               ),
+          //               maxLines: 2,
+          //               overflow: TextOverflow.ellipsis,
+          //             ),
+          //           ],
+          //         ),
+          //       ),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

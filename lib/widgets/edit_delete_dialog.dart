@@ -52,7 +52,7 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
       SnackBar(
         content: Text(message),
         behavior: SnackBarBehavior.floating,
-        backgroundColor: Colors.green,
+        backgroundColor: AppColors.primary,
       ),
     );
   }
@@ -132,7 +132,7 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
           ),
           child: Container(
             decoration: const BoxDecoration(
-              color: Colors.white,
+              color: Color(0xffFDFBF9),
               borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
             ),
             padding: const EdgeInsets.all(24),
@@ -321,14 +321,14 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 2),
             decoration: BoxDecoration(
-              color: isSelected ? AppColors.secondary : Colors.white,
+              color: isSelected ? AppColors.secondary : AppColors.white,
               border: Border.all(color: AppColors.secondary, width: 1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Text(
               catName,
               style: TextStyle(
-                color: isSelected ? Colors.white : Colors.black,
+                color: isSelected ? AppColors.white : Colors.black,
                 fontWeight: FontWeight.w500,
                 fontSize: 14,
               ),
@@ -377,7 +377,7 @@ class _EditDeleteTaskDialogState extends State<EditDeleteTaskDialog> {
             child: const Text(
               'Update',
               style: TextStyle(
-                color: Colors.white,
+                color: Color(0xffFDFBF9),
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
               ),

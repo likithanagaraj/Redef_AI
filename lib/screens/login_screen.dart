@@ -139,7 +139,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'email',
                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: AppColors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
@@ -182,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     hintText: 'password',
                     hintStyle: TextStyle(color: Colors.grey[400], fontSize: 16),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: AppColors.white,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: const BorderSide(
@@ -260,7 +260,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     onPressed: _isLoading ? null : _login,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.primary,
-                      foregroundColor: Colors.white,
+                      foregroundColor: AppColors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
                       ),
@@ -276,7 +276,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
                         valueColor: AlwaysStoppedAnimation<Color>(
-                          Colors.white,
+                          Color(0xffFDFBF9),
                         ),
                       ),
                     )

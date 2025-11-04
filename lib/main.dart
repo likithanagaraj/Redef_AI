@@ -27,6 +27,7 @@ void main() async {
         ),
         ChangeNotifierProvider(create: (_) => TaskProvider()),
         ChangeNotifierProvider(create: (_) => DeepworkTimer()),
+
       ],
       child: const MyApp(),
     ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redef_ai_main/Theme.dart';
 import 'package:redef_ai_main/core/supabase_config.dart';
 import 'package:redef_ai_main/screens/home_screen.dart';
 import 'onboarding_screen.dart';
@@ -59,7 +60,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         'Redef AI',
                         style: TextStyle(
                           fontSize: 64,
-                          color: Colors.white,
+                          color: Color(0xffFDFBF9),
                           fontWeight: FontWeight.w500,
                           fontFamily: 'SourceSerif4',
                           letterSpacing: -1.5,
@@ -70,7 +71,7 @@ class _SplashScreenState extends State<SplashScreen> {
                         'Get more done with your day',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Colors.white.withOpacity(0.85),
+                          color: AppColors.white.withOpacity(0.85),
                           fontWeight: FontWeight.w300,
                           fontFamily: 'Inter',
                           letterSpacing: 0.2,
@@ -83,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 48.0),
                 child: CircularProgressIndicator(
-                  color: Colors.white,
+                  color: AppColors.white,
                   strokeWidth: 1.0,
                 ),
               ),

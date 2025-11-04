@@ -49,29 +49,40 @@ class HabitService {
       final logs = await fetchLogsForDate(date);
 
       // Create a map for quick lookup
-      final logMap = {
-        for (final log in logs) log.habitId: log.status,
-      };
+      final logMap = {for (final log in logs) log.habitId: log.status};
 
       // Normalize date to remove time component (yyyy-MM-dd)
       final normalizedSelectedDate = DateTime(date.year, date.month, date.day);
 
-      // Filter and merge habits
-      return habits.where((habit) {
-        // Normalize habit creation date (yyyy-MM-dd)
+      // Filter and merge habits WITH STREAKS (calculated up to selected date)
+      final habitsWithStatus = habits
+          .where((habit) {
         final normalizedCreatedDate = DateTime(
           habit.createdAt.year,
           habit.createdAt.month,
           habit.createdAt.day,
         );
-
-        // Only show habit if selected date >= creation date
-        // Example: If habit created on Jan 15, show it on Jan 15, 16, 17... but NOT Jan 14, 13, etc
         return normalizedSelectedDate.isAfter(normalizedCreatedDate) ||
             normalizedSelectedDate.isAtSameMomentAs(normalizedCreatedDate);
-      }).map((habit) {
+      })
+          .map((habit) {
         return habit.copyWith(status: logMap[habit.id] ?? false);
-      }).toList();
+      })
+          .toList();
+
+      // Fetch streaks for all habits in parallel - PASS THE SELECTED DATE
+      final streaksResults = await Future.wait(
+          habitsWithStatus.map((habit) => getHabitStreak(habit.id, upToDate: date))
+      );
+
+      // Assign streaks to habits
+      for (int i = 0; i < habitsWithStatus.length; i++) {
+        habitsWithStatus[i] = habitsWithStatus[i].copyWith(
+            streak: streaksResults[i]
+        );
+      }
+
+      return habitsWithStatus;
     } catch (e) {
       print('Error merging habits with logs: $e');
       rethrow;
@@ -79,7 +90,11 @@ class HabitService {
   }
 
   // Add new habit
-  Future<Habit> addHabit(String name, {String? description, String? type}) async {
+  Future<Habit> addHabit(
+      String name, {
+        String? description,
+        String? type,
+      }) async {
     try {
       final userId = SupabaseConfig.client.auth.currentUser?.id;
       if (userId == null) throw Exception('User not authenticated');
@@ -153,10 +168,7 @@ class HabitService {
           .eq('habit_id', habitId);
 
       // Then delete the habit itself
-      await SupabaseConfig.client
-          .from(_habitsTable)
-          .delete()
-          .eq('id', habitId);
+      await SupabaseConfig.client.from(_habitsTable).delete().eq('id', habitId);
     } catch (e) {
       print('Error deleting habit: $e');
       rethrow;
@@ -164,7 +176,11 @@ class HabitService {
   }
 
   // Update habit
-  Future<Habit> updateHabit(String habitId, {String? name, String? description}) async {
+  Future<Habit> updateHabit(
+      String habitId, {
+        String? name,
+        String? description,
+      }) async {
     try {
       final response = await SupabaseConfig.client
           .from(_habitsTable)
@@ -190,8 +206,69 @@ class HabitService {
         .from(_logsTable)
         .stream(primaryKey: ['id'])
         .eq('date', formattedDate)
-        .map((logs) => (logs as List)
-        .map((e) => HabitLog.fromJson(e as Map<String, dynamic>))
-        .toList());
+        .map(
+          (logs) => (logs as List)
+          .map((e) => HabitLog.fromJson(e as Map<String, dynamic>))
+          .toList(),
+    );
+  }
+
+  // FIXED: Calculate streak UP TO a specific date (not always today)
+  Future<int> getHabitStreak(String habitId, {DateTime? upToDate}) async {
+    try {
+      // Use provided date or default to today
+      final targetDate = upToDate ?? DateTime.now();
+      final normalizedTargetDate = DateTime(targetDate.year, targetDate.month, targetDate.day);
+
+      // Fetch all completed logs for this habit UP TO the target date
+      final response = await SupabaseConfig.client
+          .from('habit_logs')
+          .select('date, status')
+          .eq('habit_id', habitId)
+          .eq('status', true)
+          .lte('date', normalizedTargetDate.toIso8601String().split('T').first)
+          .order('date', ascending: false);
+
+      if (response == null || (response as List).isEmpty) return 0;
+
+      final logs = (response as List)
+          .map((e) => DateTime.parse(e['date'] as String))
+          .toList();
+
+      int streak = 0;
+      DateTime expectedDate = normalizedTargetDate;
+
+      // Check if habit was completed on target date or the day before
+      final mostRecentLog = logs.first;
+      final daysSinceLastLog = normalizedTargetDate.difference(mostRecentLog).inDays;
+
+      if (daysSinceLastLog > 1) {
+        // More than 1 day gap from target date - streak is broken
+        return 0;
+      }
+
+      // If completed the day before target date, start checking from that day
+      if (daysSinceLastLog == 1) {
+        expectedDate = normalizedTargetDate.subtract(Duration(days: 1));
+      }
+
+      // Count consecutive days going backwards from expected date
+      for (final logDate in logs) {
+        final normalizedLogDate = DateTime(logDate.year, logDate.month, logDate.day);
+
+        if (normalizedLogDate.isAtSameMomentAs(expectedDate)) {
+          streak++;
+          expectedDate = expectedDate.subtract(Duration(days: 1));
+        } else if (normalizedLogDate.isBefore(expectedDate)) {
+          // Found a gap - streak is broken
+          break;
+        }
+      }
+
+      return streak;
+    } catch (e) {
+      print('Error calculating streak: $e');
+      return 0;
+    }
   }
 }

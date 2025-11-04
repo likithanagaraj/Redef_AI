@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:redef_ai_main/Theme.dart';
 import 'package:redef_ai_main/models/task.dart';
 import 'package:redef_ai_main/widgets/edit_delete_dialog.dart';
 
@@ -63,7 +64,7 @@ class _TaskListWidgetState extends State<TaskListWidget> {
         if (_isExpanded || widget.title == null) ...[
           Container(
             decoration: BoxDecoration(
-              color: Colors.white,
+              color: AppColors.white,
               borderRadius: BorderRadius.circular(8),
               boxShadow: [
                 BoxShadow(

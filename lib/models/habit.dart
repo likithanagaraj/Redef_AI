@@ -8,6 +8,7 @@ class Habit {
   final String userId;
   final DateTime createdAt;
   bool status;
+  int streak;
 
   Habit({
     required this.id,
@@ -18,6 +19,7 @@ class Habit {
     this.type,
     this.parentId,
     this.status = false,
+    this.streak =0
   });
 
   // Copy with method for immutability
@@ -30,6 +32,7 @@ class Habit {
     String? userId,
     DateTime? createdAt,
     bool? status,
+    int? streak
   }) {
     return Habit(
       id: id ?? this.id,
@@ -40,6 +43,7 @@ class Habit {
       userId: userId ?? this.userId,
       createdAt: createdAt ?? this.createdAt,
       status: status ?? this.status,
+      streak: streak ?? this.streak,
     );
   }
 
@@ -54,6 +58,7 @@ class Habit {
       userId: json['user_id'] as String,
       createdAt: DateTime.parse(json['created_at'] as String),
       status: false, // Default status, will be updated from logs
+      streak: json['streak'] as int? ?? 0, // optional — no error if absent
     );
   }
 
@@ -71,7 +76,7 @@ class Habit {
   }
 
   @override
-  String toString() => 'Habit(id: $id, name: $name, status: $status)';
+  String toString() => 'Habit(id: $id, name: $name, status: $status,streak: $streak)';
 }
 
 class HabitLog {

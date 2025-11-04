@@ -45,7 +45,7 @@ class _TasksScreenState extends State<TasksScreen> {
         ),
       ),
       floatingActionButton: FloatingActionButton(
-        foregroundColor: Colors.white,
+        foregroundColor: AppColors.white,
         onPressed: _showAddTaskDialog,
         backgroundColor: AppColors.primary,
         child: const Icon(Icons.add, size: 30),
@@ -134,7 +134,7 @@ class _TasksScreenState extends State<TasksScreen> {
         child: Text(
           label,
           style: TextStyle(
-            color: isSelected ? Colors.white : Colors.black,
+            color: isSelected ? AppColors.white : Colors.black,
             fontWeight: FontWeight.w600,
             fontSize: 14,
           ),

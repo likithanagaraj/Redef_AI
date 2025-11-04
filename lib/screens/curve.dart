@@ -38,7 +38,7 @@ class EnergyCurve extends StatelessWidget {
                     return LineTooltipItem(
                       '${spot.y.toStringAsFixed(1)}',
                       const TextStyle(
-                        color: Colors.white,
+                        color: Color(0xffFDFBF9),
                         fontWeight: FontWeight.bold,
                         fontSize: 12,
                       ),
