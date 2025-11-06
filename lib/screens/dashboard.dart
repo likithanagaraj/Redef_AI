@@ -9,7 +9,9 @@ import '../core/supabase_config.dart';
 import '../providers/habit_provider.dart';
 
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key});
+  final Function(int) onNavigateToTab; // Add this parameter
+
+  const DashboardScreen({super.key, required this.onNavigateToTab});
 
   @override
   State<DashboardScreen> createState() => _DashboardScreenState();
@@ -103,7 +105,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
       pomodoros = fetchedPomodoros;
       pomodoroMinutes = totalMinutes;
     });
-
   }
 
   @override
@@ -162,6 +163,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           pomodoroMinutes: minutes,
                           habitsDone: habitProvider.todayCompletedHabits,
                           totalHabits: habitProvider.todayTotalHabits,
+                          onNavigateToTab: widget.onNavigateToTab, // Pass the callback
                         );
                       },
                     ),

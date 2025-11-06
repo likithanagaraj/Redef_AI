@@ -16,17 +16,19 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
-  final List<Widget> _screens = [
-    const DashboardScreen(),
+  // Callback function to handle navigation from child widgets
+  void _onItemTapped(int index) {
+    setState(() => _selectedIndex = index);
+  }
+
+  // Build the screens list with navigation callback
+  List<Widget> get _screens => [
+    DashboardScreen(onNavigateToTab: _onItemTapped),
     DeepworkScreen(),
     const RedefScreen(),
     const HabitsScreen(),
     const TasksScreen(),
   ];
-
-  void _onItemTapped(int index) {
-    setState(() => _selectedIndex = index);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -82,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-
                   ),
                   child: Container(
                     decoration: BoxDecoration(
