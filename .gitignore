@@ -47,4 +47,9 @@ app.*.map.json
 .env
 android/key.properties
 app/upload-keystore.jks
-
+build/
+android/build/
+android/.gradle/
+*.apk
+*.aab
+.gradle/

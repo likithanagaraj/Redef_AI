@@ -9,30 +9,20 @@ environment:
   sdk: ^3.9.2
 
 dependencies:
+  audioplayers: ^6.6.0
   flutter:
     sdk: flutter
-  flutter_dotenv: 6.0.0
-  cupertino_icons: ^1.0.8
-  supabase_flutter: ^2.5.4
-  google_fonts: ^6.1.0
-  flutter_svg: ^2.1.1
-  provider: ^6.0.5
-  audioplayers: ^6.5.1
-  fl_chart: ^1.1.1
-  brick_offline_first_with_supabase: ^1.0.0
-  sqflite: ^2.3.0
-  brick_sqlite: ^3.1.0
-  uuid: ^3.0.4
-  dashed_circular_progress_bar: ^0.0.6
-
+  flutter_svg: ^2.2.4
+  intl: ^0.20.2
+  isar: ^3.1.0
+  isar_flutter_libs: ^3.1.0+1
+  path_provider: ^2.1.5
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^5.0.0
-  flutter_launcher_icons: "^0.14.4"
-  brick_offline_first_with_supabase_build: ^1.0.0
-  build_runner: ^2.4.0
+  build_runner: ^2.4.13
+  isar_generator: ^3.1.0
 
 flutter_icons:
   android: true
@@ -42,28 +32,18 @@ flutter_icons:
 flutter:
   uses-material-design: true
   assets:
-     - assets/images/
-     - assets/sounds/
-     - .env
+    - assets/icons/
+    - assets/images/
+    - assets/sounds/
   fonts:
-    - family: Inter
+    - family: ndot
       fonts:
-        - asset: assets/fonts/Inter_18pt-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/Inter_18pt-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/Inter_18pt-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/Inter_18pt-Bold.ttf
-          weight: 700
-
-    - family: SourceSerif4
+        - asset: assets/fonts/ndot-47-inspired-by-nothing.otf
+    - family: TTNormsPro
       fonts:
-        - asset: assets/fonts/SourceSerif4-Regular.ttf
-          weight: 400
-        - asset: assets/fonts/SourceSerif4-Medium.ttf
-          weight: 500
-        - asset: assets/fonts/SourceSerif4-SemiBold.ttf
-          weight: 600
-        - asset: assets/fonts/SourceSerif4-Bold.ttf
+        - asset: assets/fonts/TT Norms Pro Bold.otf
           weight: 700
+        - asset: assets/fonts/TT Norms Pro Medium.otf
+          weight: 500
+        - asset: assets/fonts/TT Norms Pro Regular.otf
+          weight: 400
