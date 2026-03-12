@@ -1,0 +1,30 @@
+﻿Analyzing redef_ai_main...
+
+  error - lib\services\notification_service.dart:24:22 - A value of type 'TimezoneInfo' can't be assigned to a variable of type 'String'. Try changing the type of the variable, or casting the right-hand type to 'String'. - invalid_assignment
+  error - lib\services\notification_service.dart:116:44 - The named parameter 'androidScheduleMode' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:116:44 - The named parameter 'notificationDetails' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:116:44 - The named parameter 'scheduledDate' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:119:20 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:20 - Too many positional arguments: 0 expected, but 7 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:119:20 - Undefined name 't'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:22 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:22 - Undefined name 'forget'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:29 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:29 - Undefined name 'to'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:32 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:32 - Undefined name 'check'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:38 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:38 - Undefined name 'off'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:42 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:42 - Undefined name 'your'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:47 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:119:47 - Undefined name 'habits'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:119:54 - Expected to find ')'. - expected_token
+  error - lib\services\notification_service.dart:119:65 - Unterminated string literal. - unterminated_string_literal
+  error - test\widget_test.dart:16:35 - The name 'MyApp' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+warning - analysis_options.yaml:10:10 - The include file 'package:flutter_lints/flutter.yaml' in 'C:\Users\likit\StudioProjects\redef_ai_main\analysis_options.yaml' can't be found when analyzing 'C:\Users\likit\StudioProjects\redef_ai_main'. - include_file_not_found
+warning - lib\screens\fullscreen_timer_screen.dart:130:10 - The declaration '_buildColon' isn't referenced. Try removing the declaration of '_buildColon'. - unused_element
+warning - lib\screens\tasks_screen.dart:651:69 - The '!' will have no effect because the receiver can't be null. Try removing the '!' operator. - unnecessary_non_null_assertion
+   info - lib\screens\notification_settings_screen.dart:138:13 - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+
+26 issues found.

@@ -7,6 +7,7 @@ import '../models/task.dart';
 import '../models/habit.dart';
 import '../models/session.dart';
 import '../screens/habits_screen.dart'; // To reuse HabitLogic extension
+import '../screens/notification_settings_screen.dart';
 import '../constants.dart';
 import '../widgets/dashed_border.dart';
 
@@ -116,17 +117,32 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 // Header
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Text("WELCOME", style: kTitleStyle),
-                    const SizedBox(width: 8),
-                    SvgPicture.asset(
-                      "assets/icons/home-smile.svg",
-                      width: IconSize.lg,
-                      height: IconSize.lg,
-                      colorFilter: const ColorFilter.mode(
-                        textColor,
-                        BlendMode.srcIn,
-                      ),
+                    Row(
+                      children: [
+                        const Text("WELCOME", style: kTitleStyle),
+                        const SizedBox(width: 8),
+                        SvgPicture.asset(
+                          "assets/icons/home-smile.svg",
+                          width: IconSize.lg,
+                          height: IconSize.lg,
+                          colorFilter: const ColorFilter.mode(
+                            textColor,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ],
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.notifications_active_outlined, color: textColor),
+                      onPressed: () {
+                        Navigator.of(context, rootNavigator: true).push(
+                          MaterialPageRoute(
+                            builder: (context) => const NotificationSettingsScreen(),
+                          ),
+                        ).then((_) => _loadStats());
+                      },
                     ),
                   ],
                 ),

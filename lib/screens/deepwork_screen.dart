@@ -10,6 +10,7 @@ import 'see_all_screen.dart';
 import 'package:isar/isar.dart';
 import '../models/project.dart';
 import '../models/session.dart';
+import '../services/notification_service.dart';
 
 class DeepworkScreen extends StatefulWidget {
   const DeepworkScreen({Key? key}) : super(key: key);
@@ -78,6 +79,17 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
       await session.project.save();
     });
     
+    // Check for Achievement Alert (e.g. 4 hours focused today)
+    final today = DateTime.now();
+    final startOfToday = DateTime(today.year, today.month, today.day);
+    final sessionsToday = await isar.deepworkSessions.filter().endTimeGreaterThan(startOfToday).findAll();
+    int totalMinutesToday = sessionsToday.fold(0, (sum, s) => sum + s.durationInMinutes);
+    // If they just crossed the 4 hour mark (240 minutes) we trigger an alert.
+    // We check if this exact session pushed them over the threshold to avoid spamming them
+    if (totalMinutesToday >= 240 && (totalMinutesToday - session.durationInMinutes) < 240) {
+      NotificationService().showAchievementAlert("Great Work!", "You focused for 4 hours today!");
+    }
+
     _loadData();
   }
 
@@ -177,6 +189,7 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
           
           final player = AudioPlayer();
           player.play(AssetSource('sounds/bell-notification.mp3'));
+          NotificationService().showPomodoroCompletion();
           return;
         }
         setState(() {

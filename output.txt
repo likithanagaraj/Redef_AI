@@ -1,0 +1,53 @@
+﻿Analyzing redef_ai_main...
+
+  error - lib\screens\home_screen.dart:64:33 - The getter 'deepworkSessions' isn't defined for the type 'Isar'. Try importing the library that defines 'deepworkSessions', correcting the name to the name of an existing getter, or defining a getter or field named 'deepworkSessions'. - undefined_getter
+  error - lib\screens\home_screen.dart:67:23 - A value of type 'double' can't be assigned to a variable of type 'int'. Try changing the type of the variable, or casting the right-hand type to 'int'. - invalid_assignment
+  error - lib\services\notification_service.dart:21:33 - A value of type 'TimezoneInfo' can't be assigned to a variable of type 'String'. Try changing the type of the variable, or casting the right-hand type to 'String'. - invalid_assignment
+  error - lib\services\notification_service.dart:36:44 - The named parameter 'settings' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:37:7 - Too many positional arguments: 0 expected, but 1 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:71:44 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:72:7 - Too many positional arguments: 0 expected, but 4 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:84:44 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:85:7 - Too many positional arguments: 0 expected, but 4 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:96:46 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:96:53 - Too many positional arguments: 0 expected, but 1 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:106:44 - The named parameter 'androidScheduleMode' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:106:44 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:106:44 - The named parameter 'notificationDetails' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:106:44 - The named parameter 'scheduledDate' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:107:7 - Too many positional arguments: 0 expected, but 10 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:109:14 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:14 - Undefined name 't'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:16 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:16 - Undefined name 'forget'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:23 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:23 - Undefined name 'to'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:26 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:26 - Undefined name 'check'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:32 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:32 - Undefined name 'off'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:36 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:36 - Undefined name 'your'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:41 - Expected to find ','. - expected_token
+  error - lib\services\notification_service.dart:109:41 - Undefined name 'habits'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:109:48 - Expected to find ')'. - expected_token
+  error - lib\services\notification_service.dart:109:59 - Unterminated string literal. - unterminated_string_literal
+  error - lib\services\notification_service.dart:122:46 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:122:53 - Too many positional arguments: 0 expected, but 1 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:132:44 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:132:44 - The named parameter 'notificationDetails' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:132:44 - The named parameter 'scheduledDate' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:133:7 - Too many positional arguments: 0 expected, but 5 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:139:7 - The named parameter 'uiLocalNotificationDateInterpretation' isn't defined. Try correcting the name to an existing named parameter's name, or defining a named parameter with the name 'uiLocalNotificationDateInterpretation'. - undefined_named_parameter
+  error - lib\services\notification_service.dart:139:46 - Undefined name 'UILocalNotificationDateInterpretation'. Try correcting the name to one that is defined, or defining the name. - undefined_identifier
+  error - lib\services\notification_service.dart:152:46 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:152:53 - Too many positional arguments: 0 expected, but 1 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - lib\services\notification_service.dart:164:46 - The named parameter 'id' is required, but there's no corresponding argument. Try adding the required argument. - missing_required_argument
+  error - lib\services\notification_service.dart:164:53 - Too many positional arguments: 0 expected, but 1 found. Try removing the extra positional arguments, or specifying the name for named arguments. - extra_positional_arguments_could_be_named
+  error - test\widget_test.dart:16:35 - The name 'MyApp' isn't a class. Try correcting the name to match an existing class. - creation_with_non_type
+warning - analysis_options.yaml:10:10 - The include file 'package:flutter_lints/flutter.yaml' in 'C:\Users\likit\StudioProjects\redef_ai_main\analysis_options.yaml' can't be found when analyzing 'C:\Users\likit\StudioProjects\redef_ai_main'. - include_file_not_found
+warning - lib\screens\fullscreen_timer_screen.dart:130:10 - The declaration '_buildColon' isn't referenced. Try removing the declaration of '_buildColon'. - unused_element
+warning - lib\screens\tasks_screen.dart:651:69 - The '!' will have no effect because the receiver can't be null. Try removing the '!' operator. - unnecessary_non_null_assertion
+   info - lib\screens\notification_settings_screen.dart:138:13 - 'activeColor' is deprecated and shouldn't be used. Use activeThumbColor instead. This feature was deprecated after v3.31.0-2.0.pre. Try replacing the use of the deprecated member with the replacement. - deprecated_member_use
+
+49 issues found.

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import '../constants.dart';
+import '../services/notification_service.dart';
 
 class FullscreenTimerScreen extends StatefulWidget {
   final int initialHours;
@@ -45,6 +46,7 @@ class _FullscreenTimerScreenState extends State<FullscreenTimerScreen> {
       if (_hours == 0 && _minutes == 0 && _seconds == 0) {
         timer.cancel();
         setState(() => _isPlaying = false);
+        NotificationService().showPomodoroCompletion();
         return;
       }
       setState(() {

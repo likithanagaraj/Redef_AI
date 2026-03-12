@@ -6,6 +6,7 @@ import '../design_tokens.dart';
 import '../models/task.dart';
 import '../constants.dart';
 import '../widgets/dashed_border.dart';
+import '../services/notification_service.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({Key? key}) : super(key: key);
@@ -229,6 +230,7 @@ class _TasksScreenState extends State<TasksScreen> {
               await isar.tasks.put(task);
             });
             _loadTasks();
+            NotificationService().reevaluateNotifications();
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
@@ -285,6 +287,7 @@ class _TasksScreenState extends State<TasksScreen> {
                     await isar.tasks.put(task);
                   });
                   _loadTasks();
+                  NotificationService().reevaluateNotifications();
                 },
                 child: task.isCompleted
                   ? Container(

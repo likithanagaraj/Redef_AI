@@ -7,6 +7,7 @@ import '../design_tokens.dart';
 import '../widgets/dashed_border.dart';
 import 'main_screen.dart';
 import '../models/habit.dart';
+import '../services/notification_service.dart';
 
 extension HabitLogic on Habit {
   bool isCheckedOn(DateTime date) {
@@ -228,7 +229,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                         children: [
                           const SizedBox(height: Spacing.xxl),
                           SvgPicture.asset(
-                            "assets/icons/whiteStreak.svg",
+                            "assets/icons/whiteStreaks.svg",
                             width: 64,
                             height: 64,
                             colorFilter: ColorFilter.mode(textColor.withValues(alpha: 0.3), BlendMode.srcIn),
@@ -399,6 +400,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
             
             await isar.writeTxn(() async => await isar.habits.put(habit));
             _loadHabits();
+            NotificationService().reevaluateNotifications();
           },
           child: Opacity(
             opacity: isFutureDate ? 0.4 : 1.0,
