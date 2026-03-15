@@ -8,39 +8,9 @@ import '../widgets/dashed_border.dart';
 import 'main_screen.dart';
 import '../models/habit.dart';
 import '../services/notification_service.dart';
+import '../services/widget_service.dart';
 
-extension HabitLogic on Habit {
-  bool isCheckedOn(DateTime date) {
-    return completedDates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
-  }
 
-  int calculateStreak(DateTime today) {
-    if (completedDates.isEmpty) return 0;
-    
-    final uniqueDates = completedDates
-        .map((d) => DateTime(d.year, d.month, d.day))
-        .toSet()
-        .toList()
-      ..sort((a, b) => b.compareTo(a));
-
-    int streak = 0;
-    DateTime checkDate = DateTime(today.year, today.month, today.day);
-    
-    if (uniqueDates.isNotEmpty && uniqueDates.first.isBefore(checkDate)) {
-        checkDate = checkDate.subtract(const Duration(days: 1));
-    }
-
-    for (DateTime date in uniqueDates) {
-      if (date.year == checkDate.year && date.month == checkDate.month && date.day == checkDate.day) {
-        streak++;
-        checkDate = checkDate.subtract(const Duration(days: 1));
-      } else {
-        break; 
-      }
-    }
-    return streak;
-  }
-}
 
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({Key? key}) : super(key: key);
@@ -399,8 +369,9 @@ class _HabitsScreenState extends State<HabitsScreen> {
             habit.completedDates = activeDates;
             
             await isar.writeTxn(() async => await isar.habits.put(habit));
-            _loadHabits();
-            NotificationService().reevaluateNotifications();
+             _loadHabits();
+             WidgetService.updateWidgetData();
+             NotificationService().reevaluateNotifications();
           },
           child: Opacity(
             opacity: isFutureDate ? 0.4 : 1.0,
@@ -896,6 +867,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                     
                     await isar.writeTxn(() async => await isar.habits.put(h));
                     _loadHabits();
+                    WidgetService.updateWidgetData();
                   }
                   if (mounted) Navigator.pop(context);
                 },

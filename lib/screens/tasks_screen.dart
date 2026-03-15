@@ -7,6 +7,7 @@ import '../models/task.dart';
 import '../constants.dart';
 import '../widgets/dashed_border.dart';
 import '../services/notification_service.dart';
+import '../services/widget_service.dart';
 
 class TasksScreen extends StatefulWidget {
   const TasksScreen({Key? key}) : super(key: key);
@@ -213,6 +214,7 @@ class _TasksScreenState extends State<TasksScreen> {
                  await isar.tasks.delete(task.id);
                });
                _loadTasks();
+               WidgetService.updateWidgetData();
             }
             return delete;
           }
@@ -230,6 +232,7 @@ class _TasksScreenState extends State<TasksScreen> {
               await isar.tasks.put(task);
             });
             _loadTasks();
+            WidgetService.updateWidgetData();
             NotificationService().reevaluateNotifications();
           },
           child: Container(
@@ -653,7 +656,8 @@ class _TasksScreenState extends State<TasksScreen> {
                         await isar.writeTxn(() async {
                            await isar.tasks.put(t);
                         });
-                        _loadTasks();
+                         _loadTasks();
+                         WidgetService.updateWidgetData();
                       }
                       if (mounted) Navigator.pop(context);
                     },

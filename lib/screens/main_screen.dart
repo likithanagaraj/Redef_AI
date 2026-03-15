@@ -5,6 +5,7 @@ import 'deepwork_screen.dart';
 import 'habits_screen.dart';
 import 'tasks_screen.dart';
 import 'home_screen.dart';
+import '../services/widget_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
@@ -15,6 +16,12 @@ class MainScreen extends StatefulWidget {
 
 class _MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetService.updateWidgetData();
+  }
 
   void _navigate(int index) {
     setState(() {

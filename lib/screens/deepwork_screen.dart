@@ -11,6 +11,7 @@ import 'package:isar/isar.dart';
 import '../models/project.dart';
 import '../models/session.dart';
 import '../services/notification_service.dart';
+import '../services/widget_service.dart';
 
 class DeepworkScreen extends StatefulWidget {
   const DeepworkScreen({Key? key}) : super(key: key);
@@ -91,6 +92,7 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
     }
 
     _loadData();
+    WidgetService.updateWidgetData();
   }
 
   @override

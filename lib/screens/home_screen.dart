@@ -134,16 +134,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ],
                     ),
-                    IconButton(
-                      icon: const Icon(Icons.notifications_active_outlined, color: textColor),
-                      onPressed: () {
-                        Navigator.of(context, rootNavigator: true).push(
-                          MaterialPageRoute(
-                            builder: (context) => const NotificationSettingsScreen(),
-                          ),
-                        ).then((_) => _loadStats());
-                      },
-                    ),
+                    // IconButton(
+                    //   icon: const Icon(Icons.notifications_active_outlined, color: textColor),
+                    //   onPressed: () {
+                    //     Navigator.of(context, rootNavigator: true).push(
+                    //       MaterialPageRoute(
+                    //         builder: (context) => const NotificationSettingsScreen(),
+                    //       ),
+                    //     ).then((_) => _loadStats());
+                    //   },
+                    // ),
                   ],
                 ),
                 const SizedBox(height: Spacing.xxl),

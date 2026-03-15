@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:redef_ai_main/screens/main_screen.dart';
 import 'package:redef_ai_main/services/isar_service.dart';
 import 'package:redef_ai_main/services/notification_service.dart';
+import 'package:redef_ai_main/services/widget_service.dart';
 
 import 'constants.dart';
 
@@ -11,6 +12,7 @@ void main() async {
     await IsarService().openDB();
     await NotificationService().init();
     await NotificationService().reevaluateNotifications();
+    await WidgetService.updateWidgetData();
   } catch (e) {
     debugPrint("Failed to initialize core services: $e");
   }
