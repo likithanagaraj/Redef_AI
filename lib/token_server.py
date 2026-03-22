@@ -16,7 +16,7 @@ def get_token():
         LIVEKIT_API_KEY,
         LIVEKIT_API_SECRET,
     ).with_identity("flutter-user").with_grants(
-        api.VideoGrants(room_join=True, room="test-room")
+        api.VideoGrants(room_join=True, room="redef-room")
     ).to_jwt()
 
     return {"token": token}

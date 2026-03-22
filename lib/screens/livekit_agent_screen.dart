@@ -10,7 +10,7 @@ class LiveKitAgentScreen extends StatefulWidget {
 
   const LiveKitAgentScreen({
     Key? key,
-    this.tokenUrl = 'http://192.168.1.10:8000/token',
+    this.tokenUrl = 'https://redef-ai.onrender.com/token',
     this.livekitUrl = 'wss://redefai-0ymcdbve.livekit.cloud',
   }) : super(key: key);
 
@@ -22,6 +22,7 @@ class _LiveKitAgentScreenState extends State<LiveKitAgentScreen> {
   lk.Room? _room;
   bool _isConnected = false;
   bool _isConnecting = false;
+  bool _microphoneEnabled = false;
   String _statusMessage = 'Disconnected';
   String? _errorMessage;
   lk.LocalAudioTrack? _audioTrack;
@@ -96,20 +97,26 @@ Future<String> _fetchToken() async {
 
       // Listen to connection state changes
       _room!.addListener(() {
-        setState(() {
-          if (_room!.connectionState ==
-              lk.ConnectionState.connected) {
+        if (_room!.connectionState == lk.ConnectionState.connected) {
+          setState(() {
             _isConnected = true;
             _statusMessage = 'Connected';
             _isConnecting = false;
+          });
+          // Enable microphone only once after connection
+          if (!_microphoneEnabled) {
+            _microphoneEnabled = true;
             _enableMicrophone();
-          } else if (_room!.connectionState ==
-              lk.ConnectionState.disconnected) {
+          }
+        } else if (_room!.connectionState ==
+            lk.ConnectionState.disconnected) {
+          setState(() {
             _isConnected = false;
             _statusMessage = 'Disconnected';
             _isConnecting = false;
-          }
-        });
+            _microphoneEnabled = false;
+          });
+        }
       });
 
       // Connect to LiveKit
@@ -126,12 +133,18 @@ Future<String> _fetchToken() async {
 
   Future<void> _enableMicrophone() async {
     try {
+      if (_audioTrack != null) {
+        print('Audio track already exists');
+        return;
+      }
+      
       // Create and publish local audio track
       _audioTrack = await lk.LocalAudioTrack.create();
       await _room!.localParticipant?.publishAudioTrack(_audioTrack!);
       print('Microphone enabled');
     } catch (e) {
       print('Error enabling microphone: $e');
+      _microphoneEnabled = false;
       // Non-fatal error, app can work without mic
     }
   }
@@ -147,6 +160,8 @@ Future<String> _fetchToken() async {
         await _room!.disconnect();
         _room = null;
       }
+      
+      _microphoneEnabled = false;
 
       setState(() {
         _isConnected = false;
