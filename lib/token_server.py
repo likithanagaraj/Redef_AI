@@ -1,20 +1,21 @@
 from fastapi import FastAPI
 from livekit import api
 import os
+import asyncio
 
 app = FastAPI()
 
 LIVEKIT_URL = "https://redefai-0ymcdbve.livekit.cloud"
 
 @app.get("/token")
-async def get_token():   # ✅ make this async
+async def get_token():
     key = os.getenv("LIVEKIT_API_KEY")
     secret = os.getenv("LIVEKIT_API_SECRET")
 
     if not key or not secret:
         return {"error": "Missing credentials"}
 
-    room_name = "test-room"   # ✅ define this
+    room_name = "test-room"
 
     token = (
         api.AccessToken(key, secret)
@@ -23,6 +24,13 @@ async def get_token():   # ✅ make this async
         .to_jwt()
     )
 
+    # 🔥 run dispatch in background (DON'T BLOCK)
+    asyncio.create_task(dispatch_agent(key, secret, room_name))
+
+    return {"token": token, "room": room_name}
+
+
+async def dispatch_agent(key, secret, room_name):
     try:
         async with api.LiveKitAPI(
             url=LIVEKIT_URL,
@@ -31,11 +39,10 @@ async def get_token():   # ✅ make this async
         ) as lk:
             await lk.agent_dispatch.create_dispatch(
                 api.CreateAgentDispatchRequest(
-                    agent_name="Redef-demo",  # ✅ correct name
+                    agent_name="Redef-demo",
                     room=room_name,
                 )
             )
+            print("Agent dispatched")
     except Exception as e:
         print("Dispatch error:", e)
-
-    return {"token": token, "room": room_name}
