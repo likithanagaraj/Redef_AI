@@ -1,10 +1,13 @@
+from fastapi import FastAPI
+from livekit import api
+import os
+
+app = FastAPI()   # ✅ THIS MUST COME BEFORE @app.get
+
 @app.get("/token")
 def get_token():
     key = os.getenv("LIVEKIT_API_KEY")
     secret = os.getenv("LIVEKIT_API_SECRET")
-
-    print("KEY:", key)
-    print("SECRET:", secret)
 
     if not key or not secret:
         return {"error": "Missing credentials"}
