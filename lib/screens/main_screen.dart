@@ -5,6 +5,7 @@ import 'deepwork_screen.dart';
 import 'habits_screen.dart';
 import 'tasks_screen.dart';
 import 'home_screen.dart';
+import 'livekit_agent_screen.dart';
 import '../services/widget_service.dart';
 
 class MainScreen extends StatefulWidget {
@@ -32,14 +33,7 @@ class _MainScreenState extends State<MainScreen> {
   List<Widget> get _screens => [
     HomeScreen(onNavigate: _navigate),
     const DeepworkScreen(),
-    Center(
-      child: Image.asset(
-        "assets/images/redef_ai.png",
-        width: 200,
-        height: 200,
-        fit: BoxFit.cover,
-      ),
-    ),
+    const LiveKitAgentScreen(),
     const HabitsScreen(),
     const TasksScreen(),
   ];
@@ -92,8 +86,8 @@ class _MainScreenState extends State<MainScreen> {
               iconPath,
               width: 24,
               height: 24,
-              colorFilter: isSelected 
-                  ? const ColorFilter.mode(cta, BlendMode.srcIn) 
+              colorFilter: isSelected
+                  ? const ColorFilter.mode(cta, BlendMode.srcIn)
                   : const ColorFilter.mode(Colors.grey, BlendMode.srcIn),
             ),
           ),
@@ -107,6 +101,18 @@ class _MainScreenState extends State<MainScreen> {
             ),
             child: Text(label),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildConnectedScreen() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Connected to AI Agent', style: TextStyle(fontSize: 24)),
+          // Here you can add LiveKit components, like video or audio controls
         ],
       ),
     );
