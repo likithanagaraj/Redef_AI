@@ -26,7 +26,7 @@ class _LiveKitAgentScreenState extends State<LiveKitAgentScreen> {
   String _statusMessage = 'Disconnected';
   String? _errorMessage;
   lk.LocalAudioTrack? _audioTrack;
-
+String? _roomName;
   @override
   void dispose() {
     _disconnect();
@@ -46,6 +46,7 @@ Future<String> _fetchToken() async {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
+      _roomName = data['room'] as String?; 
       return data['token'] as String;
     } else {
       throw Exception(

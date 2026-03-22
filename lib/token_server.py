@@ -12,11 +12,13 @@ def get_token():
     if not (LIVEKIT_API_KEY and LIVEKIT_API_SECRET):
         raise HTTPException(status_code=500, detail="Missing LiveKit credentials")
 
+    room_name = "redef-demo"   # ✅ FIXED ROOM
+
     token = api.AccessToken(
         LIVEKIT_API_KEY,
         LIVEKIT_API_SECRET,
     ).with_identity("flutter-user").with_grants(
-        api.VideoGrants(room_join=True, room="redef-room")
+        api.VideoGrants(room_join=True, room=room_name)
     ).to_jwt()
 
-    return {"token": token}
+    return {"token": token, "room": room_name}
