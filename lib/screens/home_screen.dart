@@ -62,7 +62,7 @@ class _HomeScreenState extends State<HomeScreen> {
     if (isar == null) return;
 
     // Calculate total deepwork hours
-    final sessions = await isar.deepworkSessions.where().findAll();
+    final sessions = await isar.deepworkSessions.where().filter().isDeletedEqualTo(false).findAll();
     int totalMinutes = 0;
     for (var s in sessions) {
       totalMinutes += s.durationInMinutes;
@@ -70,7 +70,7 @@ class _HomeScreenState extends State<HomeScreen> {
     double totalHrs = totalMinutes / 60.0;
 
     // Calculate highest streak across all habits
-    final habits = await isar.habits.where().findAll();
+    final habits = await isar.habits.where().filter().isDeletedEqualTo(false).findAll();
     int highestStreak = 0;
     final today = DateTime.now();
     for (var h in habits) {
@@ -81,8 +81,9 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     // Pending tasks
-    final tasks = await isar.tasks.where().findAll();
+    final tasks = await isar.tasks.where().filter().isDeletedEqualTo(false).findAll();
     int pending = tasks.where((t) => !t.isCompleted).length;
+
 
     if (mounted) {
       setState(() {

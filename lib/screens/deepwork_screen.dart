@@ -8,6 +8,7 @@ import '../widgets/dashed_border.dart';
 import 'fullscreen_timer_screen.dart';
 import 'see_all_screen.dart';
 import 'package:isar/isar.dart';
+import 'package:redef_ai_main/services/sync_manager.dart';
 import '../models/project.dart';
 import '../models/session.dart';
 import '../services/notification_service.dart';
@@ -54,8 +55,8 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
 
   Future<void> _loadData() async {
     final isar = Isar.getInstance()!;
-    final projects = await isar.projects.where().findAll();
-    final history = await isar.deepworkSessions.where().sortByEndTimeDesc().limit(3).findAll();
+    final projects = await isar.projects.where().filter().isDeletedEqualTo(false).findAll();
+    final history = await isar.deepworkSessions.where().filter().isDeletedEqualTo(false).sortByEndTimeDesc().limit(3).findAll();
     setState(() {
       _projects = projects;
       _history = history;
@@ -70,6 +71,8 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
       ..durationInMinutes = _sessionDuration.inMinutes
       ..durationInSeconds = _sessionDuration.inSeconds
       ..isManualEntry = false;
+    
+    session.markAsUpdated(); // Initialize sync fields
       
     if (_activeProject != null) {
       session.project.value = _activeProject;
@@ -83,7 +86,10 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
     // Check for Achievement Alert (e.g. 4 hours focused today)
     final today = DateTime.now();
     final startOfToday = DateTime(today.year, today.month, today.day);
-    final sessionsToday = await isar.deepworkSessions.filter().endTimeGreaterThan(startOfToday).findAll();
+    final sessionsToday = await isar.deepworkSessions.filter()
+        .isDeletedEqualTo(false)
+        .endTimeGreaterThan(startOfToday)
+        .findAll();
     int totalMinutesToday = sessionsToday.fold(0, (sum, s) => sum + s.durationInMinutes);
     // If they just crossed the 4 hour mark (240 minutes) we trigger an alert.
     // We check if this exact session pushed them over the threshold to avoid spamming them
@@ -93,6 +99,7 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
 
     _loadData();
     WidgetService.updateWidgetData();
+    SyncManager().syncUp();
   }
 
   @override
@@ -714,14 +721,16 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
                       if (controller.text.isNotEmpty) {
                         final isar = Isar.getInstance()!;
                         final newProj = Project()..name = controller.text;
+                        newProj.markAsUpdated();
                         await isar.writeTxn(() async {
                           await isar.projects.put(newProj);
                         });
-                        setState(() {
-                          _projects.add(newProj);
-                          _activeProject = newProj;
-                        });
-                      } else {
+                          setState(() {
+                            _projects.add(newProj);
+                            _activeProject = newProj;
+                          });
+                          SyncManager().syncUp();
+                        } else {
                         setState(() {
                            _activeProject = selected;
                         });

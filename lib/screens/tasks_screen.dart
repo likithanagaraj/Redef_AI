@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:isar/isar.dart';
 import 'package:intl/intl.dart';
 import '../design_tokens.dart';
+import 'package:redef_ai_main/services/sync_manager.dart';
 import '../models/task.dart';
 import '../constants.dart';
 import '../widgets/dashed_border.dart';
@@ -30,7 +31,7 @@ class _TasksScreenState extends State<TasksScreen> {
 
   Future<void> _loadTasks() async {
     final isar = Isar.getInstance()!;
-    final loadedTasks = await isar.tasks.where().findAll();
+    final loadedTasks = await isar.tasks.where().filter().isDeletedEqualTo(false).findAll();
     
     final Set<String> uniqueCats = {};
     for (var t in loadedTasks) {
@@ -210,11 +211,14 @@ class _TasksScreenState extends State<TasksScreen> {
             bool? delete = await _showDeleteDialog(context);
             if (delete == true) {
                final isar = Isar.getInstance()!;
+               task.markAsDeleted();
                await isar.writeTxn(() async {
-                 await isar.tasks.delete(task.id);
+                 await isar.tasks.put(task);
                });
                _loadTasks();
                WidgetService.updateWidgetData();
+               SyncManager().syncUp();
+
             }
             return delete;
           }
@@ -228,12 +232,14 @@ class _TasksScreenState extends State<TasksScreen> {
           onTap: () async {
             final isar = Isar.getInstance()!;
             task.isCompleted = !task.isCompleted;
+            task.markAsUpdated();
             await isar.writeTxn(() async {
               await isar.tasks.put(task);
             });
             _loadTasks();
             WidgetService.updateWidgetData();
             NotificationService().reevaluateNotifications();
+            SyncManager().syncUp();
           },
           child: Container(
             padding: const EdgeInsets.symmetric(
@@ -286,11 +292,13 @@ class _TasksScreenState extends State<TasksScreen> {
                 onTap: () async {
                   final isar = Isar.getInstance()!;
                   task.isCompleted = !task.isCompleted;
+                  task.markAsUpdated();
                   await isar.writeTxn(() async {
                     await isar.tasks.put(task);
                   });
                   _loadTasks();
                   NotificationService().reevaluateNotifications();
+                  SyncManager().syncUp();
                 },
                 child: task.isCompleted
                   ? Container(
@@ -468,7 +476,7 @@ class _TasksScreenState extends State<TasksScreen> {
   }
 
   void _showAddTaskBottomSheet(BuildContext context, {Task? taskToEdit}) {
-    String selectedCategory = "";
+    String selectedCategory = taskToEdit?.category ?? "";
     bool isCreatingNewCategory = false;
     TextEditingController nameController = TextEditingController(text: taskToEdit?.name ?? "");
     TextEditingController categoryController = TextEditingController();
@@ -644,6 +652,9 @@ class _TasksScreenState extends State<TasksScreen> {
                         final t = taskToEdit ?? Task();
                         if (taskToEdit == null) {
                            t.createdAt = DateTime.now();
+                           t.ensureRemoteId();
+                        } else {
+                           t.markAsUpdated();
                         }
                         String? finalCat = selectedCategory;
                         if (isCreatingNewCategory && categoryController.text.isNotEmpty) {
@@ -658,6 +669,8 @@ class _TasksScreenState extends State<TasksScreen> {
                         });
                          _loadTasks();
                          WidgetService.updateWidgetData();
+                SyncManager().syncUp();
+
                       }
                       if (mounted) Navigator.pop(context);
                     },

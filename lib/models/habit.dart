@@ -1,10 +1,14 @@
 import 'package:isar/isar.dart';
+import 'sync_base.dart';
 
 part 'habit.g.dart';
 
 @collection
-class Habit {
+class Habit with SyncableModel {
   Id id = Isar.autoIncrement;
+
+  @Index(unique: true, replace: true)
+  String? remoteId;
 
   late String name;
   String? description;
@@ -16,15 +20,31 @@ class Habit {
   List<DateTime> completedDates = [];
 }
 
+
+
 extension HabitLogic on Habit {
+  void cleanupCompletions() {
+    final startMidnight = DateTime(startedAt.year, startedAt.month, startedAt.day);
+    completedDates = completedDates.where((d) {
+      final dMidnight = DateTime(d.year, d.month, d.day);
+      return !dMidnight.isBefore(startMidnight);
+    }).toList();
+  }
+
   bool isCheckedOn(DateTime date) {
     return completedDates.any((d) => d.year == date.year && d.month == date.month && d.day == date.day);
   }
 
   int calculateStreak(DateTime today) {
-    if (completedDates.isEmpty) return 0;
+    // Only count dates that are >= startedAt
+    final startMidnight = DateTime(startedAt.year, startedAt.month, startedAt.day);
+    final validDates = completedDates
+        .where((d) => !DateTime(d.year, d.month, d.day).isBefore(startMidnight))
+        .toList();
+
+    if (validDates.isEmpty) return 0;
     
-    final uniqueDates = completedDates
+    final uniqueDates = validDates
         .map((d) => DateTime(d.year, d.month, d.day))
         .toSet()
         .toList()

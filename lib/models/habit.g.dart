@@ -37,14 +37,34 @@ const HabitSchema = CollectionSchema(
       name: r'endDate',
       type: IsarType.dateTime,
     ),
-    r'name': PropertySchema(
+    r'isDeleted': PropertySchema(
       id: 4,
+      name: r'isDeleted',
+      type: IsarType.bool,
+    ),
+    r'isSynced': PropertySchema(
+      id: 5,
+      name: r'isSynced',
+      type: IsarType.bool,
+    ),
+    r'name': PropertySchema(
+      id: 6,
       name: r'name',
       type: IsarType.string,
     ),
+    r'remoteId': PropertySchema(
+      id: 7,
+      name: r'remoteId',
+      type: IsarType.string,
+    ),
     r'startedAt': PropertySchema(
-      id: 5,
+      id: 8,
       name: r'startedAt',
+      type: IsarType.dateTime,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 9,
+      name: r'updatedAt',
       type: IsarType.dateTime,
     )
   },
@@ -76,6 +96,12 @@ int _habitEstimateSize(
     }
   }
   bytesCount += 3 + object.name.length * 3;
+  {
+    final value = object.remoteId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -89,8 +115,12 @@ void _habitSerialize(
   writer.writeDateTime(offsets[1], object.createdAt);
   writer.writeString(offsets[2], object.description);
   writer.writeDateTime(offsets[3], object.endDate);
-  writer.writeString(offsets[4], object.name);
-  writer.writeDateTime(offsets[5], object.startedAt);
+  writer.writeBool(offsets[4], object.isDeleted);
+  writer.writeBool(offsets[5], object.isSynced);
+  writer.writeString(offsets[6], object.name);
+  writer.writeString(offsets[7], object.remoteId);
+  writer.writeDateTime(offsets[8], object.startedAt);
+  writer.writeDateTime(offsets[9], object.updatedAt);
 }
 
 Habit _habitDeserialize(
@@ -105,8 +135,12 @@ Habit _habitDeserialize(
   object.description = reader.readStringOrNull(offsets[2]);
   object.endDate = reader.readDateTimeOrNull(offsets[3]);
   object.id = id;
-  object.name = reader.readString(offsets[4]);
-  object.startedAt = reader.readDateTime(offsets[5]);
+  object.isDeleted = reader.readBool(offsets[4]);
+  object.isSynced = reader.readBool(offsets[5]);
+  object.name = reader.readString(offsets[6]);
+  object.remoteId = reader.readStringOrNull(offsets[7]);
+  object.startedAt = reader.readDateTime(offsets[8]);
+  object.updatedAt = reader.readDateTime(offsets[9]);
   return object;
 }
 
@@ -126,8 +160,16 @@ P _habitDeserializeProp<P>(
     case 3:
       return (reader.readDateTimeOrNull(offset)) as P;
     case 4:
-      return (reader.readString(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 5:
+      return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readString(offset)) as P;
+    case 7:
+      return (reader.readStringOrNull(offset)) as P;
+    case 8:
+      return (reader.readDateTime(offset)) as P;
+    case 9:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -684,6 +726,26 @@ extension HabitQueryFilter on QueryBuilder<Habit, Habit, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> isDeletedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isDeleted',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> isSyncedEqualTo(
+      bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isSynced',
+        value: value,
+      ));
+    });
+  }
+
   QueryBuilder<Habit, Habit, QAfterFilterCondition> nameEqualTo(
     String value, {
     bool caseSensitive = true,
@@ -812,6 +874,152 @@ extension HabitQueryFilter on QueryBuilder<Habit, Habit, QFilterCondition> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'remoteId',
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'remoteId',
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'remoteId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdContains(
+      String value,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdMatches(
+      String pattern,
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'remoteId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'remoteId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> remoteIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'remoteId',
+        value: '',
+      ));
+    });
+  }
+
   QueryBuilder<Habit, Habit, QAfterFilterCondition> startedAtEqualTo(
       DateTime value) {
     return QueryBuilder.apply(this, (query) {
@@ -864,6 +1072,59 @@ extension HabitQueryFilter on QueryBuilder<Habit, Habit, QFilterCondition> {
       ));
     });
   }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> updatedAtEqualTo(
+      DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> updatedAtGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> updatedAtLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterFilterCondition> updatedAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'updatedAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
 }
 
 extension HabitQueryObject on QueryBuilder<Habit, Habit, QFilterCondition> {}
@@ -907,6 +1168,30 @@ extension HabitQuerySortBy on QueryBuilder<Habit, Habit, QSortBy> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByIsSyncedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.desc);
+    });
+  }
+
   QueryBuilder<Habit, Habit, QAfterSortBy> sortByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -919,6 +1204,18 @@ extension HabitQuerySortBy on QueryBuilder<Habit, Habit, QSortBy> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByRemoteId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByRemoteIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Habit, Habit, QAfterSortBy> sortByStartedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startedAt', Sort.asc);
@@ -928,6 +1225,18 @@ extension HabitQuerySortBy on QueryBuilder<Habit, Habit, QSortBy> {
   QueryBuilder<Habit, Habit, QAfterSortBy> sortByStartedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> sortByUpdatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -981,6 +1290,30 @@ extension HabitQuerySortThenBy on QueryBuilder<Habit, Habit, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByIsSyncedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.desc);
+    });
+  }
+
   QueryBuilder<Habit, Habit, QAfterSortBy> thenByName() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'name', Sort.asc);
@@ -993,6 +1326,18 @@ extension HabitQuerySortThenBy on QueryBuilder<Habit, Habit, QSortThenBy> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByRemoteId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByRemoteIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.desc);
+    });
+  }
+
   QueryBuilder<Habit, Habit, QAfterSortBy> thenByStartedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startedAt', Sort.asc);
@@ -1002,6 +1347,18 @@ extension HabitQuerySortThenBy on QueryBuilder<Habit, Habit, QSortThenBy> {
   QueryBuilder<Habit, Habit, QAfterSortBy> thenByStartedAtDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startedAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QAfterSortBy> thenByUpdatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -1032,6 +1389,18 @@ extension HabitQueryWhereDistinct on QueryBuilder<Habit, Habit, QDistinct> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QDistinct> distinctByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isDeleted');
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QDistinct> distinctByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isSynced');
+    });
+  }
+
   QueryBuilder<Habit, Habit, QDistinct> distinctByName(
       {bool caseSensitive = true}) {
     return QueryBuilder.apply(this, (query) {
@@ -1039,9 +1408,22 @@ extension HabitQueryWhereDistinct on QueryBuilder<Habit, Habit, QDistinct> {
     });
   }
 
+  QueryBuilder<Habit, Habit, QDistinct> distinctByRemoteId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'remoteId', caseSensitive: caseSensitive);
+    });
+  }
+
   QueryBuilder<Habit, Habit, QDistinct> distinctByStartedAt() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'startedAt');
+    });
+  }
+
+  QueryBuilder<Habit, Habit, QDistinct> distinctByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'updatedAt');
     });
   }
 }
@@ -1078,15 +1460,39 @@ extension HabitQueryProperty on QueryBuilder<Habit, Habit, QQueryProperty> {
     });
   }
 
+  QueryBuilder<Habit, bool, QQueryOperations> isDeletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isDeleted');
+    });
+  }
+
+  QueryBuilder<Habit, bool, QQueryOperations> isSyncedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isSynced');
+    });
+  }
+
   QueryBuilder<Habit, String, QQueryOperations> nameProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'name');
     });
   }
 
+  QueryBuilder<Habit, String?, QQueryOperations> remoteIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'remoteId');
+    });
+  }
+
   QueryBuilder<Habit, DateTime, QQueryOperations> startedAtProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'startedAt');
+    });
+  }
+
+  QueryBuilder<Habit, DateTime, QQueryOperations> updatedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'updatedAt');
     });
   }
 }

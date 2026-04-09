@@ -6,6 +6,7 @@ import '../widgets/dashed_border.dart';
 import 'package:isar/isar.dart';
 import '../models/project.dart';
 import '../models/session.dart';
+import 'package:redef_ai_main/services/sync_manager.dart';
 import 'package:intl/intl.dart';
 
 class SeeAllScreen extends StatefulWidget {
@@ -27,8 +28,8 @@ class _SeeAllScreenState extends State<SeeAllScreen> {
 
   Future<void> _loadData() async {
     final isar = Isar.getInstance()!;
-    final sessions = await isar.deepworkSessions.where().sortByStartTimeDesc().findAll();
-    final projects = await isar.projects.where().findAll();
+    final sessions = await isar.deepworkSessions.where().filter().isDeletedEqualTo(false).sortByStartTimeDesc().findAll();
+    final projects = await isar.projects.where().filter().isDeletedEqualTo(false).findAll();
     setState(() {
       _sessions = sessions;
       _projects = projects;
@@ -194,8 +195,10 @@ class _SeeAllScreenState extends State<SeeAllScreen> {
             bool? delete = await _showDeleteDialog(context);
             if (delete == true) {
                final isar = Isar.getInstance()!;
-               await isar.writeTxn(() async => await isar.deepworkSessions.delete(session.id));
+               session.markAsDeleted();
+               await isar.writeTxn(() async => await isar.deepworkSessions.put(session));
                _loadData();
+               SyncManager().syncUp();
             }
             return delete;
           }
@@ -478,6 +481,7 @@ class _SeeAllScreenState extends State<SeeAllScreen> {
                                   if (val.isNotEmpty) {
                                     final isar = Isar.getInstance()!;
                                     final newProj = Project()..name = val;
+                                    newProj.markAsUpdated();
                                     await isar.writeTxn(() async {
                                       await isar.projects.put(newProj);
                                     });
@@ -613,14 +617,17 @@ class _SeeAllScreenState extends State<SeeAllScreen> {
                           session.durationInMinutes = totalSeconds ~/ 60;
                           session.durationInSeconds = totalSeconds % 60;
                           session.project.value = selectedProject;
+                          session.markAsUpdated();
                           
                           await isar.writeTxn(() async {
                             await isar.deepworkSessions.put(session);
                             await session.project.save();
                           });
                           _loadData();
+                          SyncManager().syncUp();
                         }
                       }
+
                       if (mounted) Navigator.pop(context);
                     },
                     child: Container(

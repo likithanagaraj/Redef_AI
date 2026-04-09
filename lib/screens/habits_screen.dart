@@ -6,6 +6,7 @@ import '../constants.dart';
 import '../design_tokens.dart';
 import '../widgets/dashed_border.dart';
 import 'main_screen.dart';
+import 'package:redef_ai_main/services/sync_manager.dart';
 import '../models/habit.dart';
 import '../services/notification_service.dart';
 import '../services/widget_service.dart';
@@ -37,7 +38,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
 
   Future<void> _loadHabits() async {
     final isar = Isar.getInstance()!;
-    final loadedHabits = await isar.habits.where().findAll();
+    final loadedHabits = await isar.habits.where().filter().isDeletedEqualTo(false).findAll();
     setState(() {
       habits = loadedHabits;
       habits.sort((a, b) => (a.isCheckedOn(selectedDate) ? 1 : 0).compareTo(b.isCheckedOn(selectedDate) ? 1 : 0));
@@ -342,8 +343,10 @@ class _HabitsScreenState extends State<HabitsScreen> {
             bool? delete = await _showDeleteDialog(context);
             if (delete == true) {
                final isar = Isar.getInstance()!;
-               await isar.writeTxn(() async => await isar.habits.delete(habit.id));
+               habit.markAsDeleted();
+               await isar.writeTxn(() async => await isar.habits.put(habit));
                _loadHabits();
+               SyncManager().syncUp();
             }
             return delete;
           }
@@ -359,6 +362,16 @@ class _HabitsScreenState extends State<HabitsScreen> {
             
             final isar = Isar.getInstance()!;
             final midnight = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+            final startMidnight = DateTime(habit.startedAt.year, habit.startedAt.month, habit.startedAt.day);
+
+            // Part 1: Strict Validation - Ignore if before start date
+            if (midnight.isBefore(startMidnight)) {
+               ScaffoldMessenger.of(context).showSnackBar(
+                 const SnackBar(content: Text("Cannot log completion before habit start date.")),
+               );
+               return;
+            }
+
             final activeDates = habit.completedDates.toList();
             
             if (isChecked) {
@@ -367,11 +380,14 @@ class _HabitsScreenState extends State<HabitsScreen> {
               activeDates.add(midnight);
             }
             habit.completedDates = activeDates;
+            habit.cleanupCompletions(); // Ensure consistency
+            habit.markAsUpdated();
             
             await isar.writeTxn(() async => await isar.habits.put(habit));
              _loadHabits();
              WidgetService.updateWidgetData();
              NotificationService().reevaluateNotifications();
+             SyncManager().syncUp();
           },
           child: Opacity(
             opacity: isFutureDate ? 0.4 : 1.0,
@@ -863,13 +879,19 @@ class _HabitsScreenState extends State<HabitsScreen> {
                     h.description = descController.text.isEmpty ? null : descController.text;
                     if (habitToEdit == null) {
                        h.completedDates = [];
+                       h.ensureRemoteId();
+                    } else {
+                       h.markAsUpdated();
                     }
+
                     
                     await isar.writeTxn(() async => await isar.habits.put(h));
                     _loadHabits();
                     WidgetService.updateWidgetData();
+                    SyncManager().syncUp();
                   }
                   if (mounted) Navigator.pop(context);
+
                 },
                 child: Container(
                   height: 56,

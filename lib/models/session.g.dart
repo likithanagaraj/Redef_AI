@@ -32,14 +32,34 @@ const DeepworkSessionSchema = CollectionSchema(
       name: r'endTime',
       type: IsarType.dateTime,
     ),
-    r'isManualEntry': PropertySchema(
+    r'isDeleted': PropertySchema(
       id: 3,
+      name: r'isDeleted',
+      type: IsarType.bool,
+    ),
+    r'isManualEntry': PropertySchema(
+      id: 4,
       name: r'isManualEntry',
       type: IsarType.bool,
     ),
+    r'isSynced': PropertySchema(
+      id: 5,
+      name: r'isSynced',
+      type: IsarType.bool,
+    ),
+    r'remoteId': PropertySchema(
+      id: 6,
+      name: r'remoteId',
+      type: IsarType.string,
+    ),
     r'startTime': PropertySchema(
-      id: 4,
+      id: 7,
       name: r'startTime',
+      type: IsarType.dateTime,
+    ),
+    r'updatedAt': PropertySchema(
+      id: 8,
+      name: r'updatedAt',
       type: IsarType.dateTime,
     )
   },
@@ -70,6 +90,12 @@ int _deepworkSessionEstimateSize(
   Map<Type, List<int>> allOffsets,
 ) {
   var bytesCount = offsets.last;
+  {
+    final value = object.remoteId;
+    if (value != null) {
+      bytesCount += 3 + value.length * 3;
+    }
+  }
   return bytesCount;
 }
 
@@ -82,8 +108,12 @@ void _deepworkSessionSerialize(
   writer.writeLong(offsets[0], object.durationInMinutes);
   writer.writeLong(offsets[1], object.durationInSeconds);
   writer.writeDateTime(offsets[2], object.endTime);
-  writer.writeBool(offsets[3], object.isManualEntry);
-  writer.writeDateTime(offsets[4], object.startTime);
+  writer.writeBool(offsets[3], object.isDeleted);
+  writer.writeBool(offsets[4], object.isManualEntry);
+  writer.writeBool(offsets[5], object.isSynced);
+  writer.writeString(offsets[6], object.remoteId);
+  writer.writeDateTime(offsets[7], object.startTime);
+  writer.writeDateTime(offsets[8], object.updatedAt);
 }
 
 DeepworkSession _deepworkSessionDeserialize(
@@ -97,8 +127,12 @@ DeepworkSession _deepworkSessionDeserialize(
   object.durationInSeconds = reader.readLong(offsets[1]);
   object.endTime = reader.readDateTime(offsets[2]);
   object.id = id;
-  object.isManualEntry = reader.readBool(offsets[3]);
-  object.startTime = reader.readDateTime(offsets[4]);
+  object.isDeleted = reader.readBool(offsets[3]);
+  object.isManualEntry = reader.readBool(offsets[4]);
+  object.isSynced = reader.readBool(offsets[5]);
+  object.remoteId = reader.readStringOrNull(offsets[6]);
+  object.startTime = reader.readDateTime(offsets[7]);
+  object.updatedAt = reader.readDateTime(offsets[8]);
   return object;
 }
 
@@ -118,6 +152,14 @@ P _deepworkSessionDeserializeProp<P>(
     case 3:
       return (reader.readBool(offset)) as P;
     case 4:
+      return (reader.readBool(offset)) as P;
+    case 5:
+      return (reader.readBool(offset)) as P;
+    case 6:
+      return (reader.readStringOrNull(offset)) as P;
+    case 7:
+      return (reader.readDateTime(offset)) as P;
+    case 8:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -445,11 +487,185 @@ extension DeepworkSessionQueryFilter
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      isDeletedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isDeleted',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
       isManualEntryEqualTo(bool value) {
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.equalTo(
         property: r'isManualEntry',
         value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      isSyncedEqualTo(bool value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'isSynced',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNull(
+        property: r'remoteId',
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(const FilterCondition.isNotNull(
+        property: r'remoteId',
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdEqualTo(
+    String? value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdGreaterThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdLessThan(
+    String? value, {
+    bool include = false,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdBetween(
+    String? lower,
+    String? upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'remoteId',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdStartsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.startsWith(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdEndsWith(
+    String value, {
+    bool caseSensitive = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.endsWith(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdContains(String value, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.contains(
+        property: r'remoteId',
+        value: value,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdMatches(String pattern, {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.matches(
+        property: r'remoteId',
+        wildcard: pattern,
+        caseSensitive: caseSensitive,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdIsEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'remoteId',
+        value: '',
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      remoteIdIsNotEmpty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        property: r'remoteId',
+        value: '',
       ));
     });
   }
@@ -502,6 +718,62 @@ extension DeepworkSessionQueryFilter
     return QueryBuilder.apply(this, (query) {
       return query.addFilterCondition(FilterCondition.between(
         property: r'startTime',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      updatedAtEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      updatedAtGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      updatedAtLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'updatedAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      updatedAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'updatedAt',
         lower: lower,
         includeLower: includeLower,
         upper: upper,
@@ -575,6 +847,20 @@ extension DeepworkSessionQuerySortBy
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
       sortByIsManualEntry() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isManualEntry', Sort.asc);
@@ -589,6 +875,34 @@ extension DeepworkSessionQuerySortBy
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByIsSyncedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByRemoteId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByRemoteIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
       sortByStartTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startTime', Sort.asc);
@@ -599,6 +913,20 @@ extension DeepworkSessionQuerySortBy
       sortByStartTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByUpdatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -659,6 +987,20 @@ extension DeepworkSessionQuerySortThenBy
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByIsDeletedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isDeleted', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
       thenByIsManualEntry() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'isManualEntry', Sort.asc);
@@ -673,6 +1015,34 @@ extension DeepworkSessionQuerySortThenBy
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByIsSyncedDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'isSynced', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByRemoteId() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByRemoteIdDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'remoteId', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
       thenByStartTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startTime', Sort.asc);
@@ -683,6 +1053,20 @@ extension DeepworkSessionQuerySortThenBy
       thenByStartTimeDesc() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'startTime', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByUpdatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'updatedAt', Sort.desc);
     });
   }
 }
@@ -711,6 +1095,13 @@ extension DeepworkSessionQueryWhereDistinct
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
+      distinctByIsDeleted() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isDeleted');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
       distinctByIsManualEntry() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'isManualEntry');
@@ -718,9 +1109,30 @@ extension DeepworkSessionQueryWhereDistinct
   }
 
   QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
+      distinctByIsSynced() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'isSynced');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QDistinct> distinctByRemoteId(
+      {bool caseSensitive = true}) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'remoteId', caseSensitive: caseSensitive);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
       distinctByStartTime() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'startTime');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
+      distinctByUpdatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'updatedAt');
     });
   }
 }
@@ -753,6 +1165,12 @@ extension DeepworkSessionQueryProperty
     });
   }
 
+  QueryBuilder<DeepworkSession, bool, QQueryOperations> isDeletedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isDeleted');
+    });
+  }
+
   QueryBuilder<DeepworkSession, bool, QQueryOperations>
       isManualEntryProperty() {
     return QueryBuilder.apply(this, (query) {
@@ -760,10 +1178,29 @@ extension DeepworkSessionQueryProperty
     });
   }
 
+  QueryBuilder<DeepworkSession, bool, QQueryOperations> isSyncedProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'isSynced');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, String?, QQueryOperations> remoteIdProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'remoteId');
+    });
+  }
+
   QueryBuilder<DeepworkSession, DateTime, QQueryOperations>
       startTimeProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'startTime');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DateTime, QQueryOperations>
+      updatedAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'updatedAt');
     });
   }
 }

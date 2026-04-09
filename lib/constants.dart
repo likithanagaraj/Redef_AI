@@ -16,6 +16,6 @@ const TextStyle kBottomSheetTitleStyle = TextStyle(fontFamily: "TTNormsPro", fon
 const TextStyle kBottomSheetLabelStyle = TextStyle(fontFamily: "TTNormsPro", fontSize: 14, color: scaffoldBg);
 const TextStyle kBottomSheetInputStyle = TextStyle(fontFamily: "TTNormsPro", color: scaffoldBg);
 const TextStyle kBottomSheetHintStyle = TextStyle(fontFamily: "TTNormsPro", color: Colors.white30);
-
-
-
+// Supabase Config
+const String kSupabaseUrl = 'https://lprinhfwtfsfrbnpbkme.supabase.co';
+const String kSupabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImxwcmluaGZ3dGZzZnJibnBia21lIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzQ3NzgwNTcsImV4cCI6MjA5MDM1NDA1N30.q6ShzVruzc2uKMEXuAutBL4WVsOngzhxehHnVmUahnw';
