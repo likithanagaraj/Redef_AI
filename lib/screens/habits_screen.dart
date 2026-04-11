@@ -8,10 +8,11 @@ import '../widgets/dashed_border.dart';
 import 'main_screen.dart';
 import 'package:redef_ai_main/services/sync_manager.dart';
 import '../models/habit.dart';
+import '../models/notification_settings.dart';
 import '../services/notification_service.dart';
 import '../services/widget_service.dart';
-
-
+import 'habit_statistics_screen.dart';
+import 'habit_detail_screen.dart';
 
 class HabitsScreen extends StatefulWidget {
   const HabitsScreen({Key? key}) : super(key: key);
@@ -24,8 +25,11 @@ class _HabitsScreenState extends State<HabitsScreen> {
   late DateTime today;
   late DateTime selectedDate;
   late List<DateTime> weekDates;
+  bool _showNotifPrompt = false;
 
   List<Habit> habits = [];
+  String _selectedCategory = "All";
+  List<String> _categories = [];
 
   @override
   void initState() {
@@ -34,15 +38,51 @@ class _HabitsScreenState extends State<HabitsScreen> {
     selectedDate = today;
     weekDates = List.generate(7, (i) => today.subtract(Duration(days: 3 - i)));
     _loadHabits();
+    _checkNotificationPermission();
+  }
+
+  Future<void> _checkNotificationPermission() async {
+    final isar = Isar.getInstance();
+    if (isar == null) return;
+    final settings = await isar.notificationSettings.get(1);
+    
+    if (settings != null && (settings.habitReminders || settings.pendingTasksReminder)) {
+       await NotificationService().reevaluateNotifications();
+       setState(() => _showNotifPrompt = false);
+    } else {
+       setState(() => _showNotifPrompt = true);
+    }
   }
 
   Future<void> _loadHabits() async {
     final isar = Isar.getInstance()!;
     final loadedHabits = await isar.habits.where().filter().isDeletedEqualTo(false).findAll();
+    
+    final Set<String> uniqueCats = {};
+    for (var h in loadedHabits) {
+      if (h.category != null && h.category!.isNotEmpty) {
+        uniqueCats.add(h.category!);
+      }
+    }
+    
     setState(() {
       habits = loadedHabits;
+      _categories = uniqueCats.toList();
       habits.sort((a, b) => (a.isCheckedOn(selectedDate) ? 1 : 0).compareTo(b.isCheckedOn(selectedDate) ? 1 : 0));
     });
+  }
+
+  List<Habit> _getFilteredHabitsForDate(DateTime date) {
+    final selMidnight = DateTime(date.year, date.month, date.day);
+    return habits.where((habit) {
+      if (_selectedCategory != "All" && habit.category != _selectedCategory) return false;
+      final startMidnight = DateTime(habit.startedAt.year, habit.startedAt.month, habit.startedAt.day);
+      if (selMidnight.isBefore(startMidnight)) return false;
+      if (habit.endDate != null && selMidnight.isAfter(DateTime(habit.endDate!.year, habit.endDate!.month, habit.endDate!.day))) {
+        return false;
+      }
+      return true;
+    }).toList();
   }
 
   @override
@@ -91,6 +131,12 @@ class _HabitsScreenState extends State<HabitsScreen> {
               ),
               const SizedBox(height: Spacing.xxl),
 
+              if (_showNotifPrompt)
+                _buildNotificationRequestCard(),
+
+              if (_showNotifPrompt)
+                const SizedBox(height: Spacing.xl),
+
               // Horizontal Date Scroll
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -116,7 +162,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
-                            "Set the reminder",
+                            "Statistics",
                             style: TextStyle(
                               fontFamily: "TTNormsPro",
                               fontSize: 18,
@@ -126,7 +172,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                           ),
                           const SizedBox(height: 2),
                           Text(
-                            "Never miss your morning routine!\nSet a reminder to stay on track",
+                            "See how your habits are shaping your day\nStay consistent with real insights",
                             style: TextStyle(
                               fontFamily: "TTNormsPro",
                               fontSize: 12,
@@ -136,11 +182,9 @@ class _HabitsScreenState extends State<HabitsScreen> {
                           const SizedBox(height: Spacing.sm),
                           GestureDetector(
                             onTap: () {
-                              // Taking back to deepwork tab
-                              Navigator.pushAndRemoveUntil(
+                              Navigator.push(
                                 context,
-                                MaterialPageRoute(builder: (_) => const MainScreen()),
-                                (route) => false,
+                                MaterialPageRoute(builder: (_) => const HabitStatisticsScreen()),
                               );
                             },
                             child: Container(
@@ -150,7 +194,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                                 borderRadius: BorderRadius.circular(AppRadius.small),
                               ),
                               child: const Text(
-                                "Set Now",
+                                "View Stats",
                                 style: TextStyle(
                                   fontFamily: "ndot",
                                   fontSize: 10,
@@ -162,36 +206,41 @@ class _HabitsScreenState extends State<HabitsScreen> {
                         ],
                       ),
                     ),
-                     Expanded(
+                     const Expanded(
                       flex: 1,
                       child: Align(
                         alignment: Alignment.centerRight,
-                        child: SvgPicture.asset(
-                          "assets/icons/bell-notification.svg",
-                          width: 100,
-                          height: 100,
-                          colorFilter: const ColorFilter.mode(textColor, BlendMode.srcIn),
-                        ),
+                        child: Icon(Icons.bar_chart_rounded, size: 80, color: textColor),
                       ),
                     ),
+
+                  ],
+                ),
+              ),
+              const SizedBox(height: Spacing.xl),
+
+              // Categories Horizontal Scroll
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    _buildCategoryBadge("All", _selectedCategory, (v) => setState(() => _selectedCategory = v)),
+                    ..._categories.map((cat) {
+                      return Padding(
+                        padding: const EdgeInsets.only(left: 12),
+                        child: _buildCategoryBadge(cat, _selectedCategory, (v) => setState(() => _selectedCategory = v)),
+                      );
+                    }).toList(),
                   ],
                 ),
               ),
               const SizedBox(height: Spacing.xl),
 
               // Habits List
-              // Filter habits for the selected date first
               Builder(
                 builder: (context) {
-                  final selMidnight = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-                  final visibleHabits = habits.where((habit) {
-                    final startMidnight = DateTime(habit.startedAt.year, habit.startedAt.month, habit.startedAt.day);
-                    if (selMidnight.isBefore(startMidnight)) return false;
-                    if (habit.endDate != null && selMidnight.isAfter(DateTime(habit.endDate!.year, habit.endDate!.month, habit.endDate!.day))) {
-                      return false;
-                    }
-                    return true;
-                  }).toList();
+                  final visibleHabits = _getFilteredHabitsForDate(selectedDate);
+
 
                   if (visibleHabits.isEmpty) {
                     return Center(
@@ -229,6 +278,42 @@ class _HabitsScreenState extends State<HabitsScreen> {
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildCategoryBadge(String text, String selected, Function(String) onTap) {
+    bool isSelected = text == selected;
+    Widget child = Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Spacing.lg,
+        vertical: Spacing.sm,
+      ),
+      decoration: BoxDecoration(
+        color: isSelected ? textColor : Colors.transparent,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Text(
+        text,
+        style: TextStyle(
+          fontFamily: "TTNormsPro",
+          fontSize: 12,
+          fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+          color: isSelected ? scaffoldBg : textColor.withValues(alpha: 0.5),
+        ),
+      ),
+    );
+
+    return GestureDetector(
+      onTap: () => onTap(text),
+      child: isSelected
+          ? child
+          : DashedBorder(
+              color: textColor.withValues(alpha: 0.3),
+              radius: 20,
+              dashSpace: 4,
+              dashWidth: 4,
+              child: child,
+            ),
     );
   }
 
@@ -357,45 +442,16 @@ class _HabitsScreenState extends State<HabitsScreen> {
           return false;
         },
         child: GestureDetector(
-          onTap: isFutureDate ? null : () async {
-
-            
-            final isar = Isar.getInstance()!;
-            final midnight = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
-            final startMidnight = DateTime(habit.startedAt.year, habit.startedAt.month, habit.startedAt.day);
-
-            // Part 1: Strict Validation - Ignore if before start date
-            if (midnight.isBefore(startMidnight)) {
-               ScaffoldMessenger.of(context).showSnackBar(
-                 const SnackBar(content: Text("Cannot log completion before habit start date.")),
-               );
-               return;
-            }
-
-            final activeDates = habit.completedDates.toList();
-            
-            if (isChecked) {
-              activeDates.removeWhere((d) => d.year == midnight.year && d.month == midnight.month && d.day == midnight.day);
-            } else {
-              activeDates.add(midnight);
-            }
-            habit.completedDates = activeDates;
-            habit.cleanupCompletions(); // Ensure consistency
-            habit.markAsUpdated();
-            
-            await isar.writeTxn(() async => await isar.habits.put(habit));
-             _loadHabits();
-             WidgetService.updateWidgetData();
-             NotificationService().reevaluateNotifications();
-             SyncManager().syncUp();
+          onTap: () {
+            Navigator.push(context, MaterialPageRoute(builder: (_) => HabitDetailScreen(habit: habit)));
           },
           child: Opacity(
             opacity: isFutureDate ? 0.4 : 1.0,
             child: Container(
             padding: const EdgeInsets.symmetric(
-  horizontal: Spacing.lg,
-  vertical: Spacing.lg,
-),
+              horizontal: Spacing.lg,
+              vertical: Spacing.lg,
+            ),
             decoration: BoxDecoration(
               color: cardColor,
               borderRadius: BorderRadius.circular(AppRadius.small),
@@ -420,9 +476,9 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 const SizedBox(height: Spacing.sm),
                 Container(
                   padding: const EdgeInsets.symmetric(
-    horizontal: Spacing.sm,
-    vertical: Spacing.xs,
-  ),
+                    horizontal: Spacing.sm,
+                    vertical: Spacing.xs,
+                  ),
                   decoration: BoxDecoration(
                     color: isAchieved ? cta : textColor,
                     borderRadius: BorderRadius.circular(12),
@@ -453,32 +509,63 @@ class _HabitsScreenState extends State<HabitsScreen> {
             ),
           ),
           const SizedBox(width: Spacing.lg),
-          isChecked
-            ? Container(
-            width: 24,
-            height: 24,
-                decoration: const BoxDecoration(
-                  color: textColor,
-                  shape: BoxShape.circle,
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(6.0),
-                  child: SvgPicture.asset(
-                    "assets/icons/checked.svg",
-                    colorFilter: const ColorFilter.mode(scaffoldBg, BlendMode.srcIn),
-                  ),
-                ),
-              )
-            : DashedBorder(
-                color: textColor.withValues(alpha: 0.5),
-                isCircle: true,
-                dashWidth: 4,
-                dashSpace: 3,
-                child: const SizedBox(
+          GestureDetector(
+            onTap: isFutureDate ? null : () async {
+              final isar = Isar.getInstance()!;
+              final midnight = DateTime(selectedDate.year, selectedDate.month, selectedDate.day);
+              final startMidnight = DateTime(habit.startedAt.year, habit.startedAt.month, habit.startedAt.day);
+
+              if (midnight.isBefore(startMidnight)) {
+                 ScaffoldMessenger.of(context).showSnackBar(
+                   const SnackBar(content: Text("Cannot log completion before habit start date.")),
+                 );
+                 return;
+              }
+
+              final activeDates = habit.completedDates.toList();
+              
+              if (isChecked) {
+                activeDates.removeWhere((d) => d.year == midnight.year && d.month == midnight.month && d.day == midnight.day);
+              } else {
+                activeDates.add(midnight);
+              }
+              habit.completedDates = activeDates;
+              habit.cleanupCompletions();
+              habit.markAsUpdated();
+              
+              await isar.writeTxn(() async => await isar.habits.put(habit));
+              _loadHabits();
+              WidgetService.updateWidgetData();
+              NotificationService().reevaluateNotifications();
+              SyncManager().syncUp();
+            },
+            child: isChecked
+              ? Container(
                   width: 24,
                   height: 24,
+                  decoration: const BoxDecoration(
+                    color: textColor,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(6.0),
+                    child: SvgPicture.asset(
+                      "assets/icons/checked.svg",
+                      colorFilter: const ColorFilter.mode(scaffoldBg, BlendMode.srcIn),
+                    ),
+                  ),
+                )
+              : DashedBorder(
+                  color: textColor.withValues(alpha: 0.5),
+                  isCircle: true,
+                  dashWidth: 4,
+                  dashSpace: 3,
+                  child: const SizedBox(
+                    width: 24,
+                    height: 24,
+                  ),
                 ),
-              ),
+          ),
         ],
       ),
     ),
@@ -629,8 +716,11 @@ class _HabitsScreenState extends State<HabitsScreen> {
   }
 
   void _showAddHabitBottomSheet(BuildContext context, {Habit? habitToEdit}) {
+    String selectedCategory = habitToEdit?.category ?? "";
+    bool isCreatingNewCategory = false;
     TextEditingController nameController = TextEditingController(text: habitToEdit?.name ?? "");
     TextEditingController descController = TextEditingController(text: habitToEdit?.description ?? "");
+    TextEditingController categoryController = TextEditingController();
     DateTime habitStartDate = habitToEdit?.startedAt ?? DateTime.now();
     DateTime? habitEndDate = habitToEdit?.endDate;
 
@@ -662,7 +752,7 @@ class _HabitsScreenState extends State<HabitsScreen> {
                 children: [
               Text(
                 habitToEdit != null ? "Edit Habit" : "Add Habit",
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: "TTNormsPro",
                   fontSize: 24,
                   fontWeight: FontWeight.w600,
@@ -737,134 +827,229 @@ class _HabitsScreenState extends State<HabitsScreen> {
                   ),
                 ),
               ),
-                            // Date Pickers for Start and End Dates
-                    const SizedBox(height: Spacing.xl),
-                    const Text(
-                      "Start Date",
-                      style: TextStyle(
-                        fontFamily: "TTNormsPro",
-                        fontSize: 14,
-                        color: scaffoldBg,
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.sm),
-                    GestureDetector(
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: habitStartDate,
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: const ColorScheme.light(
-                                  primary: cta,
-                                  onPrimary: textColor,
-                                  onSurface: scaffoldBg,
-                                  surface: textColor,
-                                ),
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: scaffoldBg,
-                                  ),
-                                ),
-                              ),
-                              child: child!,
-                            );
-                          },
-                        );
-                        if (picked != null) {
-                          setModalState(() => habitStartDate = picked);
-                        }
-                      },
-                      child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: scaffoldBg.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              DateFormat('dd MMM yyyy').format(habitStartDate),
-                              style: const TextStyle(
+              const SizedBox(height: 24),
+              const Text(
+                "Category",
+                style: TextStyle(
+                  fontFamily: "TTNormsPro",
+                  fontSize: 14,
+                  color: scaffoldBg,
+                ),
+              ),
+              const SizedBox(height: Spacing.md),
+              if (_categories.isEmpty)
+                const SizedBox.shrink()
+              else
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 12,
+                  children: [
+                    ..._categories.map((cat) => _buildAddCategoryBadge(cat, selectedCategory, (v) => setModalState(() => selectedCategory = v))).toList(),
+                    _buildAddCategoryBadge("none", selectedCategory, (v) => setModalState(() => selectedCategory = v)),
+                  ],
+                ),
+              if (_categories.isNotEmpty) const SizedBox(height: Spacing.md),
+              Row(
+                children: [
+                  isCreatingNewCategory
+                    ? Expanded(
+                        child: Container(
+                          height: 40,
+                          decoration: BoxDecoration(
+                            color: scaffoldBg.withValues(alpha: 0.05),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          child: TextField(
+                            controller: categoryController,
+                            autofocus: true,
+                            style: const TextStyle(
+                              fontFamily: "TTNormsPro",
+                              color: scaffoldBg,
+                            ),
+                            cursorColor: cta,
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Category name",
+                              hintStyle: TextStyle(
                                 fontFamily: "TTNormsPro",
-                                fontSize: 14,
-                                color: scaffoldBg,
+                                color: scaffoldBg.withValues(alpha:  0.3),
                               ),
                             ),
-                            const Icon(Icons.calendar_today, color: scaffoldBg),
-                          ],
+                            onSubmitted: (val) {
+                              if (val.isNotEmpty) {
+                                setModalState(() {
+                                  _categories.add(val);
+                                  selectedCategory = val;
+                                  isCreatingNewCategory = false;
+                                });
+                              } else {
+                                setModalState(() => isCreatingNewCategory = false);
+                              }
+                            },
+                          ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.lg),
-                    const Text(
-                      "End Date (optional)",
-                      style: TextStyle(
-                        fontFamily: "TTNormsPro",
-                        fontSize: 14,
-                        color: scaffoldBg,
-                      ),
-                    ),
-                    const SizedBox(height: Spacing.sm),
-                    GestureDetector(
-                      onTap: () async {
-                        final picked = await showDatePicker(
-                          context: context,
-                          initialDate: habitEndDate ?? habitStartDate,
-                          firstDate: habitStartDate,
-                          lastDate: DateTime(2100),
-                          builder: (context, child) {
-                            return Theme(
-                              data: Theme.of(context).copyWith(
-                                colorScheme: const ColorScheme.light(
-                                  primary: cta,
-                                  onPrimary: textColor,
-                                  onSurface: scaffoldBg,
-                                  surface: textColor,
-                                ),
-                                textButtonTheme: TextButtonThemeData(
-                                  style: TextButton.styleFrom(
-                                    foregroundColor: scaffoldBg,
+                      )
+                    : GestureDetector(
+                        onTap: () {
+                           setModalState(() => isCreatingNewCategory = true);
+                        },
+                        child: DashedBorder(
+                          color: scaffoldBg.withValues(alpha:  0.3),
+                          radius: 20,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: Spacing.lg,
+                              vertical: Spacing.sm,
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  _categories.isEmpty ? "No category .Create one" : "Create new",
+                                  style: const TextStyle(
+                                    fontFamily: "TTNormsPro",
+                                    fontSize: 12,
+                                    color: scaffoldBg,
                                   ),
                                 ),
-                              ),
-                              child: child!,
-                            );
-                          },
-                        );
-                        if (picked != null) {
-                          setModalState(() => habitEndDate = picked);
-                        }
-                      },
-                      child: Container(
-                        height: 50,
-                        padding: const EdgeInsets.symmetric(horizontal: 20),
-                        decoration: BoxDecoration(
-                          color: scaffoldBg.withValues(alpha: 0.05),
-                          borderRadius: BorderRadius.circular(25),
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              habitEndDate != null ? DateFormat('dd MMM yyyy').format(habitEndDate!) : "No end date",
-                              style: const TextStyle(
-                                fontFamily: "TTNormsPro",
-                                fontSize: 14,
-                                color: scaffoldBg,
-                              ),
+                                const SizedBox(width: Spacing.xs),
+                                const Icon(Icons.add_circle_outline, size: 14, color: scaffoldBg),
+                              ],
                             ),
-                            const Icon(Icons.calendar_today, color: scaffoldBg),
-                          ],
+                          ),
+                        ),
+                      )
+                ],
+              ),
+              // Date Pickers for Start and End Dates
+              const SizedBox(height: Spacing.xl),
+              const Text(
+                "Start Date",
+                style: TextStyle(
+                  fontFamily: "TTNormsPro",
+                  fontSize: 14,
+                  color: scaffoldBg,
+                ),
+              ),
+              const SizedBox(height: Spacing.sm),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: habitStartDate,
+                    firstDate: DateTime(2000),
+                    lastDate: DateTime(2100),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: cta,
+                            onPrimary: textColor,
+                            onSurface: scaffoldBg,
+                            surface: textColor,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: scaffoldBg,
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) {
+                    setModalState(() => habitStartDate = picked);
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: scaffoldBg.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat('dd MMM yyyy').format(habitStartDate),
+                        style: const TextStyle(
+                          fontFamily: "TTNormsPro",
+                          fontSize: 14,
+                          color: scaffoldBg,
                         ),
                       ),
-                    ),
-                    const SizedBox(height: Spacing.xxl),
+                      const Icon(Icons.calendar_today, color: scaffoldBg),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: Spacing.lg),
+              const Text(
+                "End Date (optional)",
+                style: TextStyle(
+                  fontFamily: "TTNormsPro",
+                  fontSize: 14,
+                  color: scaffoldBg,
+                ),
+              ),
+              const SizedBox(height: Spacing.sm),
+              GestureDetector(
+                onTap: () async {
+                  final picked = await showDatePicker(
+                    context: context,
+                    initialDate: habitEndDate ?? habitStartDate,
+                    firstDate: habitStartDate,
+                    lastDate: DateTime(2100),
+                    builder: (context, child) {
+                      return Theme(
+                        data: Theme.of(context).copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: cta,
+                            onPrimary: textColor,
+                            onSurface: scaffoldBg,
+                            surface: textColor,
+                          ),
+                          textButtonTheme: TextButtonThemeData(
+                            style: TextButton.styleFrom(
+                              foregroundColor: scaffoldBg,
+                            ),
+                          ),
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (picked != null) {
+                    setModalState(() => habitEndDate = picked);
+                  }
+                },
+                child: Container(
+                  height: 50,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  decoration: BoxDecoration(
+                    color: scaffoldBg.withValues(alpha: 0.05),
+                    borderRadius: BorderRadius.circular(25),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        habitEndDate != null ? DateFormat('dd MMM yyyy').format(habitEndDate!) : "No end date",
+                        style: const TextStyle(
+                          fontFamily: "TTNormsPro",
+                          fontSize: 14,
+                          color: scaffoldBg,
+                        ),
+                      ),
+                      const Icon(Icons.calendar_today, color: scaffoldBg),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: Spacing.xxl),
 
               GestureDetector(
                 onTap: () async {
@@ -875,8 +1060,14 @@ class _HabitsScreenState extends State<HabitsScreen> {
                       ..startedAt = habitStartDate
                       ..endDate = habitEndDate;
                     
+                    String? finalCat = selectedCategory;
+                    if (isCreatingNewCategory && categoryController.text.isNotEmpty) {
+                      finalCat = categoryController.text.trim();
+                    }                    
+                    
                     h.name = nameController.text;
                     h.description = descController.text.isEmpty ? null : descController.text;
+                    h.category = (finalCat == "none" || finalCat!.isEmpty) ? null : finalCat;
                     if (habitToEdit == null) {
                        h.completedDates = [];
                        h.ensureRemoteId();
@@ -925,6 +1116,128 @@ class _HabitsScreenState extends State<HabitsScreen> {
       },
         );
       },
+    );
+  }
+
+  Widget _buildAddCategoryBadge(String text, String selected, Function(String) onTap) {
+    bool isSelected = text == selected;
+    return GestureDetector(
+      onTap: () => onTap(text),
+      child: isSelected 
+        ? Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: Spacing.lg,
+              vertical: Spacing.sm,
+            ),
+            decoration: BoxDecoration(
+              color: scaffoldBg,
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Text(
+              text,
+              style: const TextStyle(
+                fontFamily: "TTNormsPro",
+                fontSize: 12,
+                color: textColor,
+              ),
+            ),
+          )
+        : DashedBorder(
+            color: scaffoldBg.withValues(alpha: 0.3),
+            radius: 20,
+            child: Container(
+              padding: const EdgeInsets.symmetric(
+                horizontal: Spacing.lg,
+                vertical: Spacing.sm,
+              ),
+              child: Text(
+                text,
+                style: const TextStyle(
+                  fontFamily: "TTNormsPro",
+                  fontSize: 12,
+                  color: scaffoldBg,
+                ),
+              ),
+            ),
+          ),
+    );
+  }
+
+  Widget _buildNotificationRequestCard() {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: cta.withValues(alpha: 0.1),
+        borderRadius: BorderRadius.circular(AppRadius.card),
+        border: Border.all(color: cta.withValues(alpha: 0.3)),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              const Icon(Icons.notifications_active_outlined, color: cta, size: 20),
+              const SizedBox(width: 8),
+              const Text(
+                "Keep the Streak Alive!",
+                style: TextStyle(
+                  fontFamily: "TTNormsPro",
+                  fontSize: 16,
+                  fontWeight: FontWeight.w700,
+                  color: cta,
+                ),
+              ),
+              const Spacer(),
+              GestureDetector(
+                onTap: () => setState(() => _showNotifPrompt = false),
+                child: Icon(Icons.close, color: cta.withValues(alpha: 0.5), size: 16),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            "Turn on daily reminders to stay consistent and reach your goals.",
+            style: TextStyle(
+              fontFamily: "TTNormsPro",
+              fontSize: 13,
+              color: textColor,
+            ),
+          ),
+          const SizedBox(height: 12),
+          GestureDetector(
+            onTap: () async {
+              final granted = await NotificationService().requestPermission();
+              if (granted == true) {
+                final isar = Isar.getInstance()!;
+                final settings = await isar.notificationSettings.get(1) ?? NotificationSettings();
+                await isar.writeTxn(() async {
+                  settings.habitReminders = true;
+                  await isar.notificationSettings.put(settings);
+                });
+                await NotificationService().reevaluateNotifications();
+                setState(() => _showNotifPrompt = false);
+              }
+            },
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: cta,
+                borderRadius: BorderRadius.circular(20),
+              ),
+              child: const Text(
+                "Enable Reminders",
+                style: TextStyle(
+                  fontFamily: "ndot",
+                  fontSize: 10,
+                  color: textColor,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

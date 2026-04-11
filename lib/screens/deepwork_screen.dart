@@ -247,8 +247,12 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
                     ),
                   ),
                   GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      // Pause the main-screen timer while in fullscreen
+                      // to avoid double-counting; fullscreen runs its own tick.
+                      _timer?.cancel();
+
+                      final result = await Navigator.push<FullscreenTimerResult>(
                         context,
                         MaterialPageRoute(
                           builder: (context) => FullscreenTimerScreen(
@@ -256,9 +260,59 @@ class _DeepworkScreenState extends State<DeepworkScreen> {
                             initialMinutes: _minutes,
                             initialSeconds: _seconds,
                             isPlaying: _isPlaying,
+                            projectName: _activeProject?.name,
                           ),
                         ),
                       );
+
+                      // Sync state back from fullscreen so progress is never lost
+                      if (result != null && mounted) {
+                        setState(() {
+                          _hours = result.hours;
+                          _minutes = result.minutes;
+                          _seconds = result.seconds;
+                          _isPlaying = result.isPlaying;
+                        });
+                        _hourController.jumpToItem(_hours);
+                        _minController.jumpToItem(_minutes);
+                        _secController.jumpToItem(_seconds);
+
+                        // Resume the main timer if it was still running in fullscreen
+                        if (_isPlaying) {
+                          _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+                            if (_hours == 0 && _minutes == 0 && _seconds == 0) {
+                              timer.cancel();
+                              _saveSession();
+                              _sessionStartTime = null;
+                              setState(() => _isPlaying = false);
+                              _updateMusic();
+                              return;
+                            }
+                            setState(() {
+                              if (_seconds > 0) {
+                                _seconds--;
+                              } else {
+                                _seconds = 59;
+                                if (_minutes > 0) {
+                                  _minutes--;
+                                } else {
+                                  _minutes = 59;
+                                  _hours--;
+                                }
+                              }
+                            });
+                            _secController.animateToItem(_seconds,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeIn);
+                            _minController.animateToItem(_minutes,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeIn);
+                            _hourController.animateToItem(_hours,
+                                duration: const Duration(milliseconds: 200),
+                                curve: Curves.easeIn);
+                          });
+                        }
+                      }
                     },
                     child: SvgPicture.asset(
                       "assets/icons/expand.svg",

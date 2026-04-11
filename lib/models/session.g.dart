@@ -17,48 +17,53 @@ const DeepworkSessionSchema = CollectionSchema(
   name: r'DeepworkSession',
   id: 1723590468105174510,
   properties: {
-    r'durationInMinutes': PropertySchema(
+    r'createdAt': PropertySchema(
       id: 0,
+      name: r'createdAt',
+      type: IsarType.dateTime,
+    ),
+    r'durationInMinutes': PropertySchema(
+      id: 1,
       name: r'durationInMinutes',
       type: IsarType.long,
     ),
     r'durationInSeconds': PropertySchema(
-      id: 1,
+      id: 2,
       name: r'durationInSeconds',
       type: IsarType.long,
     ),
     r'endTime': PropertySchema(
-      id: 2,
+      id: 3,
       name: r'endTime',
       type: IsarType.dateTime,
     ),
     r'isDeleted': PropertySchema(
-      id: 3,
+      id: 4,
       name: r'isDeleted',
       type: IsarType.bool,
     ),
     r'isManualEntry': PropertySchema(
-      id: 4,
+      id: 5,
       name: r'isManualEntry',
       type: IsarType.bool,
     ),
     r'isSynced': PropertySchema(
-      id: 5,
+      id: 6,
       name: r'isSynced',
       type: IsarType.bool,
     ),
     r'remoteId': PropertySchema(
-      id: 6,
+      id: 7,
       name: r'remoteId',
       type: IsarType.string,
     ),
     r'startTime': PropertySchema(
-      id: 7,
+      id: 8,
       name: r'startTime',
       type: IsarType.dateTime,
     ),
     r'updatedAt': PropertySchema(
-      id: 8,
+      id: 9,
       name: r'updatedAt',
       type: IsarType.dateTime,
     )
@@ -68,7 +73,21 @@ const DeepworkSessionSchema = CollectionSchema(
   deserialize: _deepworkSessionDeserialize,
   deserializeProp: _deepworkSessionDeserializeProp,
   idName: r'id',
-  indexes: {},
+  indexes: {
+    r'remoteId': IndexSchema(
+      id: 6301175856541681032,
+      name: r'remoteId',
+      unique: true,
+      replace: true,
+      properties: [
+        IndexPropertySchema(
+          name: r'remoteId',
+          type: IndexType.hash,
+          caseSensitive: true,
+        )
+      ],
+    )
+  },
   links: {
     r'project': LinkSchema(
       id: 8974048199264455029,
@@ -105,15 +124,16 @@ void _deepworkSessionSerialize(
   List<int> offsets,
   Map<Type, List<int>> allOffsets,
 ) {
-  writer.writeLong(offsets[0], object.durationInMinutes);
-  writer.writeLong(offsets[1], object.durationInSeconds);
-  writer.writeDateTime(offsets[2], object.endTime);
-  writer.writeBool(offsets[3], object.isDeleted);
-  writer.writeBool(offsets[4], object.isManualEntry);
-  writer.writeBool(offsets[5], object.isSynced);
-  writer.writeString(offsets[6], object.remoteId);
-  writer.writeDateTime(offsets[7], object.startTime);
-  writer.writeDateTime(offsets[8], object.updatedAt);
+  writer.writeDateTime(offsets[0], object.createdAt);
+  writer.writeLong(offsets[1], object.durationInMinutes);
+  writer.writeLong(offsets[2], object.durationInSeconds);
+  writer.writeDateTime(offsets[3], object.endTime);
+  writer.writeBool(offsets[4], object.isDeleted);
+  writer.writeBool(offsets[5], object.isManualEntry);
+  writer.writeBool(offsets[6], object.isSynced);
+  writer.writeString(offsets[7], object.remoteId);
+  writer.writeDateTime(offsets[8], object.startTime);
+  writer.writeDateTime(offsets[9], object.updatedAt);
 }
 
 DeepworkSession _deepworkSessionDeserialize(
@@ -123,16 +143,17 @@ DeepworkSession _deepworkSessionDeserialize(
   Map<Type, List<int>> allOffsets,
 ) {
   final object = DeepworkSession();
-  object.durationInMinutes = reader.readLong(offsets[0]);
-  object.durationInSeconds = reader.readLong(offsets[1]);
-  object.endTime = reader.readDateTime(offsets[2]);
+  object.createdAt = reader.readDateTime(offsets[0]);
+  object.durationInMinutes = reader.readLong(offsets[1]);
+  object.durationInSeconds = reader.readLong(offsets[2]);
+  object.endTime = reader.readDateTime(offsets[3]);
   object.id = id;
-  object.isDeleted = reader.readBool(offsets[3]);
-  object.isManualEntry = reader.readBool(offsets[4]);
-  object.isSynced = reader.readBool(offsets[5]);
-  object.remoteId = reader.readStringOrNull(offsets[6]);
-  object.startTime = reader.readDateTime(offsets[7]);
-  object.updatedAt = reader.readDateTime(offsets[8]);
+  object.isDeleted = reader.readBool(offsets[4]);
+  object.isManualEntry = reader.readBool(offsets[5]);
+  object.isSynced = reader.readBool(offsets[6]);
+  object.remoteId = reader.readStringOrNull(offsets[7]);
+  object.startTime = reader.readDateTime(offsets[8]);
+  object.updatedAt = reader.readDateTime(offsets[9]);
   return object;
 }
 
@@ -144,22 +165,24 @@ P _deepworkSessionDeserializeProp<P>(
 ) {
   switch (propertyId) {
     case 0:
-      return (reader.readLong(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 1:
       return (reader.readLong(offset)) as P;
     case 2:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readLong(offset)) as P;
     case 3:
-      return (reader.readBool(offset)) as P;
+      return (reader.readDateTime(offset)) as P;
     case 4:
       return (reader.readBool(offset)) as P;
     case 5:
       return (reader.readBool(offset)) as P;
     case 6:
-      return (reader.readStringOrNull(offset)) as P;
+      return (reader.readBool(offset)) as P;
     case 7:
-      return (reader.readDateTime(offset)) as P;
+      return (reader.readStringOrNull(offset)) as P;
     case 8:
+      return (reader.readDateTime(offset)) as P;
+    case 9:
       return (reader.readDateTime(offset)) as P;
     default:
       throw IsarError('Unknown property with id $propertyId');
@@ -178,6 +201,62 @@ void _deepworkSessionAttach(
     IsarCollection<dynamic> col, Id id, DeepworkSession object) {
   object.id = id;
   object.project.attach(col, col.isar.collection<Project>(), r'project', id);
+}
+
+extension DeepworkSessionByIndex on IsarCollection<DeepworkSession> {
+  Future<DeepworkSession?> getByRemoteId(String? remoteId) {
+    return getByIndex(r'remoteId', [remoteId]);
+  }
+
+  DeepworkSession? getByRemoteIdSync(String? remoteId) {
+    return getByIndexSync(r'remoteId', [remoteId]);
+  }
+
+  Future<bool> deleteByRemoteId(String? remoteId) {
+    return deleteByIndex(r'remoteId', [remoteId]);
+  }
+
+  bool deleteByRemoteIdSync(String? remoteId) {
+    return deleteByIndexSync(r'remoteId', [remoteId]);
+  }
+
+  Future<List<DeepworkSession?>> getAllByRemoteId(
+      List<String?> remoteIdValues) {
+    final values = remoteIdValues.map((e) => [e]).toList();
+    return getAllByIndex(r'remoteId', values);
+  }
+
+  List<DeepworkSession?> getAllByRemoteIdSync(List<String?> remoteIdValues) {
+    final values = remoteIdValues.map((e) => [e]).toList();
+    return getAllByIndexSync(r'remoteId', values);
+  }
+
+  Future<int> deleteAllByRemoteId(List<String?> remoteIdValues) {
+    final values = remoteIdValues.map((e) => [e]).toList();
+    return deleteAllByIndex(r'remoteId', values);
+  }
+
+  int deleteAllByRemoteIdSync(List<String?> remoteIdValues) {
+    final values = remoteIdValues.map((e) => [e]).toList();
+    return deleteAllByIndexSync(r'remoteId', values);
+  }
+
+  Future<Id> putByRemoteId(DeepworkSession object) {
+    return putByIndex(r'remoteId', object);
+  }
+
+  Id putByRemoteIdSync(DeepworkSession object, {bool saveLinks = true}) {
+    return putByIndexSync(r'remoteId', object, saveLinks: saveLinks);
+  }
+
+  Future<List<Id>> putAllByRemoteId(List<DeepworkSession> objects) {
+    return putAllByIndex(r'remoteId', objects);
+  }
+
+  List<Id> putAllByRemoteIdSync(List<DeepworkSession> objects,
+      {bool saveLinks = true}) {
+    return putAllByIndexSync(r'remoteId', objects, saveLinks: saveLinks);
+  }
 }
 
 extension DeepworkSessionQueryWhereSort
@@ -258,10 +337,133 @@ extension DeepworkSessionQueryWhere
       ));
     });
   }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterWhereClause>
+      remoteIdIsNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'remoteId',
+        value: [null],
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterWhereClause>
+      remoteIdIsNotNull() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.between(
+        indexName: r'remoteId',
+        lower: [null],
+        includeLower: false,
+        upper: [],
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterWhereClause>
+      remoteIdEqualTo(String? remoteId) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addWhereClause(IndexWhereClause.equalTo(
+        indexName: r'remoteId',
+        value: [remoteId],
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterWhereClause>
+      remoteIdNotEqualTo(String? remoteId) {
+    return QueryBuilder.apply(this, (query) {
+      if (query.whereSort == Sort.asc) {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'remoteId',
+              lower: [],
+              upper: [remoteId],
+              includeUpper: false,
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'remoteId',
+              lower: [remoteId],
+              includeLower: false,
+              upper: [],
+            ));
+      } else {
+        return query
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'remoteId',
+              lower: [remoteId],
+              includeLower: false,
+              upper: [],
+            ))
+            .addWhereClause(IndexWhereClause.between(
+              indexName: r'remoteId',
+              lower: [],
+              upper: [remoteId],
+              includeUpper: false,
+            ));
+      }
+    });
+  }
 }
 
 extension DeepworkSessionQueryFilter
     on QueryBuilder<DeepworkSession, DeepworkSession, QFilterCondition> {
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      createdAtEqualTo(DateTime value) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.equalTo(
+        property: r'createdAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      createdAtGreaterThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.greaterThan(
+        include: include,
+        property: r'createdAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      createdAtLessThan(
+    DateTime value, {
+    bool include = false,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.lessThan(
+        include: include,
+        property: r'createdAt',
+        value: value,
+      ));
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
+      createdAtBetween(
+    DateTime lower,
+    DateTime upper, {
+    bool includeLower = true,
+    bool includeUpper = true,
+  }) {
+    return QueryBuilder.apply(this, (query) {
+      return query.addFilterCondition(FilterCondition.between(
+        property: r'createdAt',
+        lower: lower,
+        includeLower: includeLower,
+        upper: upper,
+        includeUpper: includeUpper,
+      ));
+    });
+  }
+
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterFilterCondition>
       durationInMinutesEqualTo(int value) {
     return QueryBuilder.apply(this, (query) {
@@ -806,6 +1008,20 @@ extension DeepworkSessionQueryLinks
 extension DeepworkSessionQuerySortBy
     on QueryBuilder<DeepworkSession, DeepworkSession, QSortBy> {
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      sortByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
       sortByDurationInMinutes() {
     return QueryBuilder.apply(this, (query) {
       return query.addSortBy(r'durationInMinutes', Sort.asc);
@@ -933,6 +1149,20 @@ extension DeepworkSessionQuerySortBy
 
 extension DeepworkSessionQuerySortThenBy
     on QueryBuilder<DeepworkSession, DeepworkSession, QSortThenBy> {
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.asc);
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
+      thenByCreatedAtDesc() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addSortBy(r'createdAt', Sort.desc);
+    });
+  }
+
   QueryBuilder<DeepworkSession, DeepworkSession, QAfterSortBy>
       thenByDurationInMinutes() {
     return QueryBuilder.apply(this, (query) {
@@ -1074,6 +1304,13 @@ extension DeepworkSessionQuerySortThenBy
 extension DeepworkSessionQueryWhereDistinct
     on QueryBuilder<DeepworkSession, DeepworkSession, QDistinct> {
   QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
+      distinctByCreatedAt() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addDistinctBy(r'createdAt');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DeepworkSession, QDistinct>
       distinctByDurationInMinutes() {
     return QueryBuilder.apply(this, (query) {
       return query.addDistinctBy(r'durationInMinutes');
@@ -1142,6 +1379,13 @@ extension DeepworkSessionQueryProperty
   QueryBuilder<DeepworkSession, int, QQueryOperations> idProperty() {
     return QueryBuilder.apply(this, (query) {
       return query.addPropertyName(r'id');
+    });
+  }
+
+  QueryBuilder<DeepworkSession, DateTime, QQueryOperations>
+      createdAtProperty() {
+    return QueryBuilder.apply(this, (query) {
+      return query.addPropertyName(r'createdAt');
     });
   }
 

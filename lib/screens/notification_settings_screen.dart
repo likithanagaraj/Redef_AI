@@ -85,8 +85,21 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
                 final s = _settings!..habitReminders = val;
                 _saveSettings(s);
               }),
+              _buildTimeTile("Habit Reminder Time", _settings!.habitReminderTimeHour, _settings!.habitReminderTimeMinute, (h, m) {
+                final s = _settings!
+                  ..habitReminderTimeHour = h
+                  ..habitReminderTimeMinute = m;
+                _saveSettings(s);
+              }),
+              const SizedBox(height: Spacing.md),
               _buildSwitchTile("Pending Tasks Reminder", _settings!.pendingTasksReminder, (val) {
                 final s = _settings!..pendingTasksReminder = val;
+                _saveSettings(s);
+              }),
+              _buildTimeTile("Task Reminder Time", _settings!.taskReminderTimeHour, _settings!.taskReminderTimeMinute, (h, m) {
+                final s = _settings!
+                  ..taskReminderTimeHour = h
+                  ..taskReminderTimeMinute = m;
                 _saveSettings(s);
               }),
               const SizedBox(height: Spacing.xxl),
@@ -158,6 +171,63 @@ class _NotificationSettingsScreenState extends State<NotificationSettingsScreen>
             onChanged: onChanged,
             activeColor: cta,
             inactiveTrackColor: scaffoldBg.withValues(alpha: 0.5),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTimeTile(String title, int hour, int minute, Function(int, int) onTimeChanged) {
+    final time = TimeOfDay(hour: hour, minute: minute);
+    return Container(
+      margin: const EdgeInsets.only(bottom: Spacing.sm),
+      padding: const EdgeInsets.all(Spacing.lg),
+      decoration: BoxDecoration(
+        color: cardColor,
+        borderRadius: BorderRadius.circular(AppRadius.small),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            title,
+            style: const TextStyle(
+              fontFamily: "TTNormsPro",
+              fontSize: 14,
+              color: textColor,
+            ),
+          ),
+          TextButton(
+            onPressed: () async {
+              final newTime = await showTimePicker(
+                context: context,
+                initialTime: time,
+                builder: (context, child) {
+                  return Theme(
+                    data: Theme.of(context).copyWith(
+                      colorScheme: const ColorScheme.dark(
+                        primary: cta,
+                        onPrimary: textColor,
+                        surface: cardColor,
+                        onSurface: textColor,
+                      ),
+                    ),
+                    child: child!,
+                  );
+                },
+              );
+              if (newTime != null) {
+                onTimeChanged(newTime.hour, newTime.minute);
+              }
+            },
+            child: Text(
+              time.format(context),
+              style: const TextStyle(
+                fontFamily: "ndot",
+                fontSize: 16,
+                color: cta,
+              ),
+            ),
           ),
         ],
       ),

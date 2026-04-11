@@ -189,6 +189,7 @@ class SyncManager {
         final habit = local ?? Habit();
         habit.remoteId = remoteId;
         habit.name = item['name'] ?? "Untitled Habit";
+        habit.category = item['category'];
         habit.description = item['description'];
         habit.startedAt = DateTime.parse(item['started_at']);
         habit.endDate = item['end_date'] != null ? DateTime.parse(item['end_date']) : null;
@@ -331,6 +332,7 @@ class SyncManager {
         'id': h.remoteId,
         'user_id': userId,
         'name': h.name,
+        'category': h.category,
         'description': h.description,
         'started_at': h.startedAt.toIso8601String(),
         'end_date': h.endDate?.toIso8601String(),

@@ -6,8 +6,6 @@ import '../design_tokens.dart';
 import '../models/task.dart';
 import '../models/habit.dart';
 import '../models/session.dart';
-import '../screens/habits_screen.dart'; // To reuse HabitLogic extension
-import '../screens/notification_settings_screen.dart';
 import '../constants.dart';
 import '../widgets/dashed_border.dart';
 
@@ -43,6 +41,10 @@ class _HomeScreenState extends State<HomeScreen> {
   String _totalHours = "0";
   String _maxStreak = "0";
   String _pendingTasks = "0";
+  String _streakHabitName = "streak";
+
+  String _selectedFilter = 'Today';
+  final List<String> _filters = ['Today', 'Yesterday', 'This Week', 'This Month'];
 
   @override
   void initState() {
@@ -61,8 +63,32 @@ class _HomeScreenState extends State<HomeScreen> {
     final isar = Isar.getInstance();
     if (isar == null) return;
 
-    // Calculate total deepwork hours
-    final sessions = await isar.deepworkSessions.where().filter().isDeletedEqualTo(false).findAll();
+    DateTime now = DateTime.now();
+    DateTime startOfPeriod;
+    DateTime endOfPeriod;
+
+    if (_selectedFilter == 'Today') {
+      startOfPeriod = DateTime(now.year, now.month, now.day);
+      endOfPeriod = startOfPeriod.add(const Duration(days: 1)).subtract(const Duration(milliseconds: 1));
+    } else if (_selectedFilter == 'Yesterday') {
+      startOfPeriod = DateTime(now.year, now.month, now.day).subtract(const Duration(days: 1));
+      endOfPeriod = DateTime(now.year, now.month, now.day).subtract(const Duration(milliseconds: 1));
+    } else if (_selectedFilter == 'This Week') {
+      int daysToSubtract = now.weekday - 1;
+      startOfPeriod = DateTime(now.year, now.month, now.day).subtract(Duration(days: daysToSubtract));
+      endOfPeriod = startOfPeriod.add(const Duration(days: 7)).subtract(const Duration(milliseconds: 1));
+    } else { // This Month
+      startOfPeriod = DateTime(now.year, now.month, 1);
+      endOfPeriod = DateTime(now.year, now.month + 1, 1).subtract(const Duration(milliseconds: 1));
+    }
+
+    // Calculate total deepwork hours based on filter
+    final sessions = await isar.deepworkSessions.where().filter()
+        .isDeletedEqualTo(false)
+        .endTimeGreaterThan(startOfPeriod.subtract(const Duration(milliseconds: 1)))
+        .endTimeLessThan(endOfPeriod.add(const Duration(milliseconds: 1)))
+        .findAll();
+    
     int totalMinutes = 0;
     for (var s in sessions) {
       totalMinutes += s.durationInMinutes;
@@ -72,23 +98,32 @@ class _HomeScreenState extends State<HomeScreen> {
     // Calculate highest streak across all habits
     final habits = await isar.habits.where().filter().isDeletedEqualTo(false).findAll();
     int highestStreak = 0;
-    final today = DateTime.now();
+    String highestHabitName = "streak";
+    DateTime streakCheckDate = endOfPeriod.isAfter(now) ? now : endOfPeriod;
+    
     for (var h in habits) {
-      int s = h.calculateStreak(today);
+      int s = h.calculateStreak(streakCheckDate);
       if (s > highestStreak) {
         highestStreak = s;
+        highestHabitName = h.name;
       }
     }
+    if (highestStreak == 0) highestHabitName = "streak";
 
     // Pending tasks
-    final tasks = await isar.tasks.where().filter().isDeletedEqualTo(false).findAll();
+    final tasks = await isar.tasks.where().filter()
+        .isDeletedEqualTo(false)
+        .createdAtGreaterThan(startOfPeriod.subtract(const Duration(milliseconds: 1)))
+        .createdAtLessThan(endOfPeriod.add(const Duration(milliseconds: 1)))
+        .findAll();
+    
     int pending = tasks.where((t) => !t.isCompleted).length;
-
 
     if (mounted) {
       setState(() {
         _totalHours = totalHrs.toString();
         _maxStreak = highestStreak.toString();
+        _streakHabitName = highestHabitName;
         _pendingTasks = pending.toString();
       });
     }
@@ -149,7 +184,95 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 const SizedBox(height: Spacing.xxl),
 
+                // Time Filter Dropdown
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    PopupMenuButton<String>(
+                      color: cardColor,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(AppRadius.small),
+                      ),
+                      offset: const Offset(0, 40),
+                      onSelected: (String value) {
+                        setState(() {
+                          _selectedFilter = value;
+                        });
+                        _loadStats();
+                      },
+                      itemBuilder: (BuildContext context) {
+                        return _filters.map((String filter) {
+                          final isSelected = filter == _selectedFilter;
+                          return PopupMenuItem<String>(
+                            value: filter,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.calendar_today_outlined,
+                                      size: 16,
+                                      color: isSelected
+                                          ? cta
+                                          : textColor.withValues(alpha: 0.7),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      filter,
+                                      style: TextStyle(
+                                        fontFamily: "TTNormsPro",
+                                        fontSize: 14,
+                                        color: isSelected ? cta : textColor,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (isSelected)
+                                  const Icon(Icons.check,
+                                      size: 16, color: cta),
+                              ],
+                            ),
+                          );
+                        }).toList();
+                      },
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 12, vertical: 8),
+                        decoration: BoxDecoration(
+                          color: textColor.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(Icons.calendar_today_outlined,
+                                size: 14,
+                                color: textColor.withValues(alpha: 0.7)),
+                            const SizedBox(width: 6),
+                            Text(
+                              _selectedFilter,
+                              style: const TextStyle(
+                                fontFamily: "TTNormsPro",
+                                fontSize: 14,
+                                fontWeight: FontWeight.w500,
+                                color: textColor,
+                              ),
+                            ),
+                            const SizedBox(width: 4),
+                            Icon(Icons.keyboard_arrow_down,
+                                size: 16,
+                                color: textColor.withValues(alpha: 0.7)),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: Spacing.sm),
+
                 // Quote Card
+
                 Container(
                   width: double.infinity,
                   padding: const EdgeInsets.all(16),
@@ -325,11 +448,12 @@ class _HomeScreenState extends State<HomeScreen> {
                                       Flexible(
                                         // safely handle text flex without crashing
                                         child: Text(
-                                          "streak",
+                                          _streakHabitName,
                                           style: TextStyle(
                                             fontFamily: "TTNormsPro",
                                             fontSize: TypographySize.label,
                                             color: textColor.withValues(
+
                                               alpha: 0.5,
                                             ),
                                           ),

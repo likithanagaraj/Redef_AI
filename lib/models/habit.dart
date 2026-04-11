@@ -12,6 +12,7 @@ class Habit with SyncableModel {
 
   late String name;
   String? description;
+  String? category;
 
   late DateTime createdAt;
   late DateTime startedAt;
@@ -19,7 +20,6 @@ class Habit with SyncableModel {
 
   List<DateTime> completedDates = [];
 }
-
 
 
 extension HabitLogic on Habit {
